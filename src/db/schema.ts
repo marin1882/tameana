@@ -58,6 +58,7 @@ export const bookings = sqliteTable(
     estado: text('estado', { enum: ['pendiente', 'confirmada', 'cancelada'] })
       .notNull()
       .default('pendiente'),
+    modalidad: text('modalidad', { enum: ['presencial', 'online'] }).notNull(),
     payment_status: text('payment_status').notNull().default('no_aplica'),
     created_at: text('created_at').notNull(),
   },

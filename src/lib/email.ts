@@ -38,6 +38,7 @@ interface BookingEmailData {
   servicio: string;
   fecha: string;
   hora: string;
+  modalidad: string;
 }
 
 const FROM = 'Caminatu Luz <reservas@caminatuluz.com>';
@@ -77,6 +78,7 @@ export async function sendTherapistNotification(
     text: `Nueva solicitud de reserva:
 
 Servicio: ${data.servicio}
+Modalidad: ${data.modalidad === 'presencial' ? 'Presencial' : 'Online'}
 Fecha: ${data.fecha}
 Hora: ${data.hora}
 
@@ -119,6 +121,7 @@ export async function sendClientConfirmation(
 Gracias por tu solicitud de reserva.
 
 Servicio: ${data.servicio}
+Modalidad: ${data.modalidad === 'presencial' ? 'Presencial' : 'Online'}
 Fecha: ${data.fecha}
 Hora: ${data.hora}
 
@@ -162,6 +165,7 @@ export async function sendBookingConfirmed(
 Tu reserva ha sido confirmada.
 
 Servicio: ${data.servicio}
+Modalidad: ${data.modalidad === 'presencial' ? 'Presencial' : 'Online'}
 Fecha: ${data.fecha}
 Hora: ${data.hora}
 
@@ -204,6 +208,7 @@ export async function sendBookingCancelled(
 Tu reserva ha sido cancelada.
 
 Servicio: ${data.servicio}
+Modalidad: ${data.modalidad === 'presencial' ? 'Presencial' : 'Online'}
 Fecha: ${data.fecha}
 Hora: ${data.hora}
 

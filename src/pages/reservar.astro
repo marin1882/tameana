@@ -10,7 +10,13 @@ import { getAvailableDaysInMonth } from '../lib/slots';
 export const prerender = false;
 
 const serviceSlug = Astro.url.searchParams.get('servicio');
+const modalidad = Astro.url.searchParams.get('modalidad');
 const db = getDb(env);
+
+// Si hay servicio pero no modalidad válida, redirigir al paso intermedio
+if (serviceSlug && (!modalidad || !['presencial', 'online'].includes(modalidad))) {
+  return Astro.redirect(`/reservar/modalidad?servicio=${serviceSlug}`);
+}
 
 let dbError = '';
 let allServices: any[] = [];
@@ -94,9 +100,9 @@ const turnstileSiteKey = env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
       <div id="service-summary" class="flex items-center justify-between bg-surface rounded-xl px-4 py-3 max-w-sm mx-auto">
         <div>
           <span class="font-serif text-ink font-medium">{selectedService.nombre}</span>
-          <span class="text-ink/50 text-sm"> · {selectedService.duracion_min} min</span>
+          <span class="text-ink/50 text-sm"> · {modalidad === 'presencial' ? 'Presencial' : 'Online'} · {selectedService.duracion_min} min</span>
         </div>
-        <a href="/reservar" class="text-xs text-primary hover:text-ink transition-colors whitespace-nowrap">
+        <a href="/reservar/modalidad?servicio={serviceSlug}" class="text-xs text-primary hover:text-ink transition-colors whitespace-nowrap">
           cambiar
         </a>
       </div>
@@ -132,7 +138,7 @@ const turnstileSiteKey = env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
   </div>
 </PageLayout>
 
-<script define:vars={{ serviceId, turnstileSiteKey, hasPreselectedService }}>
+<script define:vars={{ serviceId, turnstileSiteKey, hasPreselectedService, modalidad }}>
   // ── Estado ──
   let selectedHora = '';
 
@@ -222,6 +228,7 @@ const turnstileSiteKey = env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
         '<input type="hidden" name="serviceId" value="' + serviceId + '" />' +
         '<input type="hidden" name="fecha" value="' + fecha + '" />' +
         '<input type="hidden" name="hora_inicio" value="' + hora + '" />' +
+        '<input type="hidden" name="modalidad" value="' + modalidad + '" />' +
 
         '<div>' +
           '<label for="nombre" class="block text-sm font-medium text-ink/70 mb-1">Nombre *</label>' +

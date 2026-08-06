@@ -71,6 +71,7 @@ export const server = {
       serviceId: z.number(),
       fecha: z.string(),
       hora_inicio: z.string(),
+      modalidad: z.enum(['presencial', 'online']),
       nombre: z.string().min(1, 'El nombre es obligatorio'),
       email: z.string().email('Email inválido'),
       telefono: z.string().min(1, 'El teléfono es obligatorio'),
@@ -134,6 +135,7 @@ export const server = {
           email: input.email.trim().toLowerCase(),
           telefono: input.telefono.trim(),
           mensaje: input.mensaje?.trim() || null,
+          modalidad: input.modalidad,
           estado: 'pendiente',
           payment_status: 'no_aplica',
           created_at: new Date().toISOString(),
@@ -171,6 +173,7 @@ export const server = {
         servicio: service.nombre,
         fecha: input.fecha,
         hora: input.hora_inicio,
+        modalidad: input.modalidad,
       };
 
       // Enviar emails (terapeuta + acuse cliente)
@@ -220,6 +223,7 @@ export const server = {
             servicio: svc?.nombre || '',
             fecha: booking.fecha,
             hora: booking.hora_inicio,
+            modalidad: booking.modalidad,
           },
           env
         );
@@ -260,6 +264,7 @@ export const server = {
             servicio: svc?.nombre || '',
             fecha: booking.fecha,
             hora: booking.hora_inicio,
+            modalidad: booking.modalidad,
           },
           env
         );

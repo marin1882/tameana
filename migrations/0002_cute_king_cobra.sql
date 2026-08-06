@@ -1,0 +1,1 @@
+ALTER TABLE `bookings` ADD `modalidad` text NOT NULL DEFAULT 'presencial';

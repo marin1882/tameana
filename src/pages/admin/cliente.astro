@@ -119,6 +119,7 @@ if (!email) {
                     <th class="py-2 pr-4 font-medium">Fecha</th>
                     <th class="py-2 pr-4 font-medium">Hora</th>
                     <th class="py-2 pr-4 font-medium">Servicio</th>
+                    <th class="py-2 pr-4 font-medium">Modalidad</th>
                     <th class="py-2 pr-4 font-medium">Nota admin</th>
                     <th class="py-2 font-medium">Estado</th>
                   </tr>
@@ -135,6 +136,7 @@ if (!email) {
                       </td>
                       <td class="py-3 pr-4 text-ink">{b.hora_inicio}</td>
                       <td class="py-3 pr-4 text-ink/70">{servicioNombre[b.service_id] || '—'}</td>
+                      <td class="py-3 pr-4 text-ink/70 text-xs">{b.modalidad === 'presencial' ? 'Presencial' : 'Online'}</td>
                       <td class="py-3 pr-4 text-ink/50 text-xs max-w-[200px] truncate">{b.nota_admin || '—'}</td>
                       <td class="py-3">
                         {b.estado === 'pendiente' ? (
