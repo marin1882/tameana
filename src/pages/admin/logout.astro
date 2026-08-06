@@ -1,0 +1,12 @@
+---
+import { LOGOUT_COOKIE } from '../../lib/auth';
+
+// Limpiar cookie y redirigir al login
+return new Response(null, {
+  status: 302,
+  headers: {
+    Location: '/admin/login',
+    'Set-Cookie': LOGOUT_COOKIE,
+  },
+});
+---

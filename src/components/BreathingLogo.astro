@@ -1,0 +1,18 @@
+---
+import Logo from './Logo.astro';
+---
+
+<a
+  href="/inicio"
+  aria-label="Entrar — Ir al inicio"
+  class="flex flex-col items-center justify-center gap-8"
+>
+  <Logo size="lg" animated={true} />
+
+  <span
+    class="font-serif text-lg text-primary/60 opacity-0"
+    style="animation: fadeIn 0.8s ease 2s forwards;"
+  >
+    entrar
+  </span>
+</a>

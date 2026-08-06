@@ -1,0 +1,41 @@
+---
+import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+const navItems = [
+  { label: 'Quién soy', href: '/quien-soy' },
+  { label: 'Sesiones', href: '/sesiones' },
+  { label: 'Tameana', href: '/tameana' },
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-sm border-b border-primary/15">
+  <nav
+    class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3"
+    aria-label="Navegación principal"
+  >
+    <a href="/inicio" aria-label="Ir al inicio" class="flex items-center gap-2">
+      <Logo size="sm" animated={false} />
+      <span class="font-serif text-lg font-medium text-ink hidden sm:inline">Tameana</span>
+    </a>
+
+    <ul class="flex items-center gap-4 sm:gap-8 text-sm sm:text-base">
+      {navItems.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class="text-ink/70 hover:text-primary transition-colors duration-200 font-medium"
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <ThemeToggle />
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Espaciador para compensar el header fijo -->
+<div class="h-14" aria-hidden="true"></div>

@@ -1,0 +1,82 @@
+---
+import Icon from './Icon.astro';
+import DrawnIcon from './DrawnIcon.astro';
+
+export interface Props {
+  icon: string;
+  title: string;
+  description: string;
+  slug: string;
+  detalle?: string;
+  drawnIcon?: string;
+}
+
+const { icon, title, description, slug, detalle, drawnIcon } = Astro.props;
+const dialogId = `dlg-${slug}`;
+---
+
+<article
+  class="bg-surface rounded-2xl p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.01] flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5"
+>
+  <!-- Fila superior en móvil: icono + título; en desktop solo icono -->
+  <div class="flex items-center gap-3 sm:flex-shrink-0">
+    {drawnIcon ? <DrawnIcon name={drawnIcon} size="lg" /> : <Icon name={icon} size="lg" />}
+    <h3 class="font-serif text-lg font-semibold text-ink sm:hidden">{title}</h3>
+  </div>
+
+  <!-- Título (desktop) + descripción -->
+  <div class="flex-1 min-w-0">
+    <h3 class="font-serif text-lg font-semibold text-ink hidden sm:block">{title}</h3>
+    <p class="text-ink/70 leading-relaxed text-sm">
+      {description}
+    </p>
+    {detalle && (
+      <button
+        type="button"
+        class="text-primary text-sm font-medium hover:underline mt-1 cursor-pointer"
+        onclick={`document.getElementById('${dialogId}').showModal()`}
+      >
+        + info
+      </button>
+    )}
+  </div>
+
+  <!-- Botón: alineado a la derecha en móvil, centrado verticalmente en desktop -->
+  <a
+    href={`/reservar?servicio=${slug}`}
+    class="btn-primary flex-shrink-0 self-end sm:self-center"
+  >
+    Reservar
+  </a>
+
+  {detalle && (
+    <dialog
+      id={dialogId}
+      class="modal-dialog rounded-2xl p-0 border-0 bg-bg shadow-xl max-w-lg w-[calc(100%-2rem)]"
+      onclick="if(event.target===this) this.close()"
+    >
+      <div class="p-6 space-y-4">
+        <h2 class="font-serif text-xl text-ink">{title}</h2>
+        <p class="text-ink/80 leading-relaxed text-sm whitespace-pre-line">{detalle}</p>
+        <form method="dialog">
+          <button
+            type="submit"
+            class="btn-primary text-sm cursor-pointer"
+          >
+            Cerrar
+          </button>
+        </form>
+      </div>
+    </dialog>
+  )}
+</article>
+
+<style>
+  .modal-dialog::backdrop {
+    background-color: rgb(0 0 0 / 0.5);
+    backdrop-filter: blur(4px);
+  }
+  .modal-dialog[open] {
+    animation: fadeIn 0.2s ease-out;
+  }
+</style>

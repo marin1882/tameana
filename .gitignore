@@ -1,0 +1,15 @@
+# Dependencias
+node_modules/
+dist/
+.wrangler/
+
+# Secrets
+.env
+.dev.vars
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Astro
+.astro/

@@ -1,0 +1,89 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+
+export const prerender = true;
+---
+
+<PageLayout
+  title="Aviso Legal"
+  description="Aviso legal y condiciones de uso del sitio web."
+>
+  <div class="max-w-2xl mx-auto space-y-8">
+    <h1 class="font-serif text-3xl md:text-4xl text-ink text-center">Aviso Legal</h1>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Titular del sitio web</h2>
+      <ul class="text-ink/70 space-y-1 list-disc list-inside leading-relaxed">
+        <li><strong>Titular:</strong> <!-- TODO: nombre fiscal -->[Nombre y apellidos]</li>
+        <li><strong>NIF:</strong> <!-- TODO: NIF -->[NIF]</li>
+        <li><strong>Domicilio:</strong> <!-- TODO: dirección profesional -->[Dirección]</li>
+        <li><strong>Email:</strong> <!-- TODO: email de contacto -->[Email]</li>
+        <li><strong>Actividad:</strong> Terapeuta de Tameana y acompañamiento personal</li>
+      </ul>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Condiciones de uso</h2>
+      <p class="text-ink/70 leading-relaxed">
+        El acceso y uso de este sitio web atribuye la condición de usuario e implica
+        la aceptación plena y sin reservas de las condiciones recogidas en este aviso
+        legal.
+      </p>
+      <p class="text-ink/70 leading-relaxed">
+        El usuario se compromete a utilizar el sitio web y sus contenidos de
+        conformidad con la ley, la moral y el orden público. Queda prohibido el
+        uso del sitio con fines ilícitos, lesivos o que puedan causar daño o
+        impedir el normal funcionamiento del mismo.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Propiedad intelectual</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Todos los contenidos del sitio web —textos, imágenes, gráficos, diseño,
+        código fuente— son propiedad del titular del sitio, salvo indicación en
+        contrario, y están protegidos por la legislación de propiedad intelectual.
+      </p>
+      <p class="text-ink/70 leading-relaxed">
+        Queda prohibida la reproducción, distribución, modificación o comunicación
+        pública de los contenidos sin la autorización expresa del titular, salvo
+        en los casos permitidos por la ley.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Responsabilidad</h2>
+      <p class="text-ink/70 leading-relaxed">
+        El titular no se hace responsable de los daños y perjuicios que pudieran
+        derivarse de:
+      </p>
+      <ul class="text-ink/70 space-y-1 list-disc list-inside leading-relaxed">
+        <li>La falta de disponibilidad o continuidad del sitio web.</li>
+        <li>Los errores en los contenidos, que se corregirán tan pronto como se detecten.</li>
+        <li>La presencia de virus o programas maliciosos, a pesar de las medidas de seguridad adoptadas.</li>
+        <li>Los contenidos de sitios web de terceros a los que se pueda enlazar desde este sitio.</li>
+      </ul>
+      <p class="text-ink/70 leading-relaxed">
+        La información sobre las sesiones y las modalidades de Tameana tiene
+        carácter orientativo y no sustituye al consejo médico profesional. Las
+        sesiones de Tameana son un complemento de bienestar y en ningún caso
+        sustituyen tratamientos médicos, psicológicos o psiquiátricos.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Legislación aplicable</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Las presentes condiciones se rigen por la legislación española. Para
+        cualquier controversia que pudiera derivarse del acceso o uso del sitio
+        web, el usuario y el titular se someten a los juzgados y tribunales del
+        domicilio del titular, renunciando expresamente a cualquier otro fuero
+        que pudiera corresponderles.
+      </p>
+    </section>
+
+    <p class="text-ink/40 text-sm text-center pt-4">
+      Última actualización: julio de 2026
+    </p>
+  </div>
+</PageLayout>

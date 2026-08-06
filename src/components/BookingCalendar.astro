@@ -1,0 +1,187 @@
+---
+export interface Props {
+  availableDays: string[];
+  selectedDate?: string;
+}
+
+const { availableDays, selectedDate } = Astro.props;
+
+const today = new Date();
+const currentMonth = selectedDate
+  ? new Date(selectedDate + 'T00:00:00')
+  : today;
+const currentYear = currentMonth.getFullYear();
+const currentMonthNum = currentMonth.getMonth();
+const currentMonthLabel = currentMonth.toLocaleDateString('es-ES', {
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<div
+  id="booking-calendar"
+  class="w-full max-w-sm mx-auto"
+  data-available-days={JSON.stringify(availableDays)}
+  data-selected-date={selectedDate || ''}
+  data-current-year={currentYear}
+  data-current-month={currentMonthNum}
+>
+  <!-- Navegación mes -->
+  <div class="flex items-center justify-between mb-4">
+    <button
+      id="cal-prev"
+      class="p-2 rounded-lg hover:bg-surface transition-colors text-primary"
+      aria-label="Mes anterior"
+    >
+      <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+      </svg>
+    </button>
+    <h3 class="font-serif text-lg font-medium text-ink capitalize" id="cal-month-label">
+      {currentMonthLabel}
+    </h3>
+    <button
+      id="cal-next"
+      class="p-2 rounded-lg hover:bg-surface transition-colors text-primary"
+      aria-label="Mes siguiente"
+    >
+      <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Días de la semana -->
+  <div class="grid grid-cols-7 gap-1 mb-2 text-center text-xs text-ink/50 font-medium">
+    <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+  </div>
+
+  <!-- Grid del mes -->
+  <div id="cal-grid" class="grid grid-cols-7 gap-1"></div>
+
+  <!-- Estado de carga -->
+  <div id="cal-loading" class="hidden text-center text-ink/30 text-sm py-2">Cargando...</div>
+
+  <input type="hidden" id="cal-selected-date" value={selectedDate || ''} />
+</div>
+
+<script is:inline>
+  (function() {
+    var container = document.getElementById('booking-calendar');
+    var availableDays = JSON.parse(container.getAttribute('data-available-days') || '[]');
+    var selectedDate = container.getAttribute('data-selected-date') || '';
+    var year = parseInt(container.getAttribute('data-current-year'));
+    var month = parseInt(container.getAttribute('data-current-month'));
+    var serviceId = 0;
+
+    // Leer serviceId del global que setea la página
+    var sidEl = document.getElementById('cal-service-id');
+    if (sidEl) serviceId = parseInt(sidEl.value) || 0;
+
+    var availableSet = new Set(availableDays.map(String));
+    var grid = document.getElementById('cal-grid');
+    var label = document.getElementById('cal-month-label');
+    var loadingEl = document.getElementById('cal-loading');
+    var hiddenInput = document.getElementById('cal-selected-date');
+
+    var monthNames = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+
+    function render() {
+      var firstDay = new Date(year, month, 1);
+      var lastDay = new Date(year, month + 1, 0);
+      var daysInMonth = lastDay.getDate();
+      var startDow = firstDay.getDay() - 1;
+      if (startDow < 0) startDow = 6;
+
+      label.textContent = monthNames[month] + ' ' + year;
+
+      var today = new Date();
+      var todayStr = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+
+      var html = '';
+      for (var i = 0; i < startDow; i++) {
+        html += '<div></div>';
+      }
+
+      for (var day = 1; day <= daysInMonth; day++) {
+        var dateStr = year + '-' +
+          String(month + 1).padStart(2, '0') + '-' +
+          String(day).padStart(2, '0');
+        var isAvailable = availableSet.has(dateStr);
+        var isPast = dateStr < todayStr;
+        var isSelected = dateStr === selectedDate;
+
+        var cls = 'py-2 rounded-lg text-center text-sm transition-colors ';
+        if (!isAvailable) {
+          cls += 'text-ink/20 cursor-default';
+        } else if (isSelected) {
+          cls += 'bg-primary text-ink font-semibold cursor-pointer';
+        } else {
+          cls += 'hover:bg-surface cursor-pointer text-ink/70';
+        }
+        html += '<div class="' + cls + '" data-date="' + dateStr + '">' + day + '</div>';
+      }
+      grid.innerHTML = html;
+
+      grid.querySelectorAll('[data-date]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var dateStr = this.getAttribute('data-date');
+          if (!availableSet.has(dateStr)) return;
+          selectedDate = dateStr;
+          hiddenInput.value = dateStr;
+          render();
+          document.dispatchEvent(new CustomEvent('calendar:select', { detail: { fecha: dateStr } }));
+        });
+      });
+    }
+
+    function changeMonth(delta) {
+      month += delta;
+      if (month < 0) { month = 11; year--; }
+      if (month > 11) { month = 0; year++; }
+      selectedDate = '';
+      hiddenInput.value = '';
+      loadingEl.classList.remove('hidden');
+      grid.classList.add('opacity-50');
+
+      // Emitir evento para que la página recargue availableDays
+      document.dispatchEvent(new CustomEvent('calendar:monthChange', {
+        detail: { year: year, month: month + 1 } // 1-indexed
+      }));
+
+      // Si no hay serviceId, renderizar sin esperar
+      if (!serviceId) {
+        availableSet = new Set();
+        loadingEl.classList.add('hidden');
+        grid.classList.remove('opacity-50');
+        render();
+      }
+    }
+
+    // Handler para cuando la página actualiza availableDays externamente
+    document.addEventListener('calendar:updateDays', function(e) {
+      var days = e.detail && e.detail.days;
+      if (Array.isArray(days)) {
+        availableSet = new Set(days.map(String));
+        loadingEl.classList.add('hidden');
+        grid.classList.remove('opacity-50');
+        render();
+      }
+    });
+
+    document.getElementById('cal-prev').addEventListener('click', function() {
+      changeMonth(-1);
+    });
+
+    document.getElementById('cal-next').addEventListener('click', function() {
+      changeMonth(1);
+    });
+
+    render();
+  })();
+</script>

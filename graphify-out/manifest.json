@@ -1,0 +1,297 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1785225725.040175,
+    "ast_hash": "f45a0b07e163ea59b16561e9386096d9",
+    "semantic_hash": ""
+  },
+  "astro.config.ts": {
+    "mtime": 1783721442.830517,
+    "ast_hash": "04db9b1e3ada9b5f8da5cbada78e39e4",
+    "semantic_hash": ""
+  },
+  "drizzle.config.ts": {
+    "mtime": 1783635505.773813,
+    "ast_hash": "a7251ba1c8a72b60f1b063a43e98c412",
+    "semantic_hash": ""
+  },
+  "migrations/0000_breezy_zeigeist.sql": {
+    "mtime": 1783635492.899443,
+    "ast_hash": "3c10a13cd5c47dde5828194fbbb71ca5",
+    "semantic_hash": ""
+  },
+  "migrations/0001_illegal_maria_hill.sql": {
+    "mtime": 1783805631.8017154,
+    "ast_hash": "099c1a43056cf059310e2ead89b33103",
+    "semantic_hash": ""
+  },
+  "migrations/meta/0000_snapshot.json": {
+    "mtime": 1783635492.899308,
+    "ast_hash": "594b4bc9f5754a62dba86811425c297c",
+    "semantic_hash": ""
+  },
+  "migrations/meta/0001_snapshot.json": {
+    "mtime": 1783805631.8013675,
+    "ast_hash": "0c8b899a6850449b22807114ce5e5ca1",
+    "semantic_hash": ""
+  },
+  "migrations/meta/_journal.json": {
+    "mtime": 1783805631.8016324,
+    "ast_hash": "577c92dfdfce8c7042de3e02ad234d49",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1783635453.511144,
+    "ast_hash": "cca99165f0d82eda81686dd33ccf980e",
+    "semantic_hash": ""
+  },
+  "src/actions/index.ts": {
+    "mtime": 1783806890.5166862,
+    "ast_hash": "3b374457e7a4a939a13236dd8d2629e3",
+    "semantic_hash": ""
+  },
+  "src/components/BookingCalendar.astro": {
+    "mtime": 1783698834.4659574,
+    "ast_hash": "bab4500296e62a4aff3ee0beedc9b277",
+    "semantic_hash": ""
+  },
+  "src/components/BookingForm.astro": {
+    "mtime": 1784024410.2044492,
+    "ast_hash": "f30623ff6fab7386a40f4e309833406c",
+    "semantic_hash": ""
+  },
+  "src/components/BreathingLogo.astro": {
+    "mtime": 1783613353.6376052,
+    "ast_hash": "00d0c6c2f0779dd40702bbb7873c7b7f",
+    "semantic_hash": ""
+  },
+  "src/components/CTALink.astro": {
+    "mtime": 1783613345.606119,
+    "ast_hash": "7f447dce734da1547eda54fd236beb26",
+    "semantic_hash": ""
+  },
+  "src/components/Header.astro": {
+    "mtime": 1784024881.4818869,
+    "ast_hash": "26aa10d8e73cb7f24d8f35aef4794815",
+    "semantic_hash": ""
+  },
+  "src/components/Icon.astro": {
+    "mtime": 1783613341.9064014,
+    "ast_hash": "6cc2d5abf8387163724a583cab7e9c24",
+    "semantic_hash": ""
+  },
+  "src/components/Logo.astro": {
+    "mtime": 1784024374.9574857,
+    "ast_hash": "3d66b1798202c8dfea0485b195f35ec5",
+    "semantic_hash": ""
+  },
+  "src/components/ServiceCard.astro": {
+    "mtime": 1785224812.0666242,
+    "ast_hash": "cb0c43029c1ba7847eca796dd7640ff9",
+    "semantic_hash": ""
+  },
+  "src/components/Starfield.astro": {
+    "mtime": 1784025343.3945267,
+    "ast_hash": "6167fe1e61c53632c6df6ee2759fdb08",
+    "semantic_hash": ""
+  },
+  "src/components/ThemeToggle.astro": {
+    "mtime": 1784025196.676325,
+    "ast_hash": "b4c35d9911542e17417c7a025f074079",
+    "semantic_hash": ""
+  },
+  "src/components/TimeSlotPicker.astro": {
+    "mtime": 1783635620.512799,
+    "ast_hash": "906a5eefac4b87d8591f3ccf81914b02",
+    "semantic_hash": ""
+  },
+  "src/db/index.ts": {
+    "mtime": 1783635470.1199832,
+    "ast_hash": "cd70e31df532f5acbc2b73258e421a9c",
+    "semantic_hash": ""
+  },
+  "src/db/schema.ts": {
+    "mtime": 1783805610.1797037,
+    "ast_hash": "1dd53e9526f340dac15ac98d2483b2cb",
+    "semantic_hash": ""
+  },
+  "src/db/seed.sql": {
+    "mtime": 1783635474.56288,
+    "ast_hash": "c078bce69707c129977730d2ed70e138",
+    "semantic_hash": ""
+  },
+  "src/env.d.ts": {
+    "mtime": 1783635566.1699958,
+    "ast_hash": "4c966953ad4d3d00c9bcc268a7adcb2c",
+    "semantic_hash": ""
+  },
+  "src/layouts/BaseLayout.astro": {
+    "mtime": 1784025351.7090137,
+    "ast_hash": "ce96fc821600352a798ad42e80abc70a",
+    "semantic_hash": ""
+  },
+  "src/layouts/PageLayout.astro": {
+    "mtime": 1783613377.6786323,
+    "ast_hash": "edce2889cc35cc63d566c95459650ab7",
+    "semantic_hash": ""
+  },
+  "src/lib/auth.ts": {
+    "mtime": 1783637123.2431984,
+    "ast_hash": "abd5a24bfe9ca2524e1eede0a6755b64",
+    "semantic_hash": ""
+  },
+  "src/lib/email.ts": {
+    "mtime": 1783806867.875892,
+    "ast_hash": "8bb772e4b8ec7aea14bdc0012b1de504",
+    "semantic_hash": ""
+  },
+  "src/lib/slots.ts": {
+    "mtime": 1783698798.3563488,
+    "ast_hash": "eb2d77e45c1a99b106de6087d8f19838",
+    "semantic_hash": ""
+  },
+  "src/lib/turnstile.ts": {
+    "mtime": 1783635550.0873246,
+    "ast_hash": "7c830de6684e4f61d37dc452a536b667",
+    "semantic_hash": ""
+  },
+  "src/middleware.ts": {
+    "mtime": 1783801234.9315734,
+    "ast_hash": "355ab74e8527dcfa2049aa9d40418e4b",
+    "semantic_hash": ""
+  },
+  "src/pages/admin/cliente.astro": {
+    "mtime": 1784024483.2897727,
+    "ast_hash": "cbc4d72b52cdf228fad8ec494ad6616a",
+    "semantic_hash": ""
+  },
+  "src/pages/admin/index.astro": {
+    "mtime": 1784024508.695435,
+    "ast_hash": "9bd1ff37edb1015558ed26fa7313ab29",
+    "semantic_hash": ""
+  },
+  "src/pages/admin/login.astro": {
+    "mtime": 1784024515.6355865,
+    "ast_hash": "d8aed88c3882dba8ed386ade82b17c76",
+    "semantic_hash": ""
+  },
+  "src/pages/admin/logout.astro": {
+    "mtime": 1783637036.792354,
+    "ast_hash": "5a2cc3796a28beb8a4c041aa5731aa99",
+    "semantic_hash": ""
+  },
+  "src/pages/api/available-days.ts": {
+    "mtime": 1783700119.5100682,
+    "ast_hash": "e0752d7446190fed3abe86b8718a9407",
+    "semantic_hash": ""
+  },
+  "src/pages/api/slots.ts": {
+    "mtime": 1783700116.7235858,
+    "ast_hash": "a5ed58979bf081c6592550f8279b06e2",
+    "semantic_hash": ""
+  },
+  "src/pages/api/test-email.ts": {
+    "mtime": 1783760040.8248823,
+    "ast_hash": "aa66397a764589266dcaafb8d48c779c",
+    "semantic_hash": ""
+  },
+  "src/pages/aviso-legal.astro": {
+    "mtime": 1783805761.9298704,
+    "ast_hash": "eb03aad5ee8874d9f0467cd43a1e1f92",
+    "semantic_hash": ""
+  },
+  "src/pages/gracias.astro": {
+    "mtime": 1783613418.3667562,
+    "ast_hash": "a30768e1dc98a903f9c36da2c1be244d",
+    "semantic_hash": ""
+  },
+  "src/pages/index.astro": {
+    "mtime": 1783613385.57443,
+    "ast_hash": "2be00c907264955c2c6fc7dedba564b9",
+    "semantic_hash": ""
+  },
+  "src/pages/inicio.astro": {
+    "mtime": 1783613390.4635344,
+    "ast_hash": "3aab7ca2f2351d409e83e9007d4404d5",
+    "semantic_hash": ""
+  },
+  "src/pages/privacidad.astro": {
+    "mtime": 1783805740.6366942,
+    "ast_hash": "f08a1d5cb84b7ba943399db909130522",
+    "semantic_hash": ""
+  },
+  "src/pages/quien-soy.astro": {
+    "mtime": 1785224838.2060118,
+    "ast_hash": "3bcc98a10fb93a2844bdd1495a70cc9f",
+    "semantic_hash": ""
+  },
+  "src/pages/reservar.astro": {
+    "mtime": 1784024565.3527052,
+    "ast_hash": "e27601bc0f51cfdfb5786cad67755c04",
+    "semantic_hash": ""
+  },
+  "src/pages/sesiones.astro": {
+    "mtime": 1783613407.647142,
+    "ast_hash": "102073464bf7f2aa7f5032ac77b379ba",
+    "semantic_hash": ""
+  },
+  "src/pages/tameana.astro": {
+    "mtime": 1785224831.9960275,
+    "ast_hash": "a7dcdc550b03aacddaa12ad5bbd33495",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1783613292.1621623,
+    "ast_hash": "ecf86236535188c78ceaa525b15f2cc3",
+    "semantic_hash": ""
+  },
+  "worker-configuration.d.ts": {
+    "mtime": 1783613284.7107656,
+    "ast_hash": "338a9c8ac5573219a9e302a12013c842",
+    "semantic_hash": ""
+  },
+  "PLAN.md": {
+    "mtime": 1783612375.4035437,
+    "ast_hash": "d2ee43b4083b450f34e3c9e3dcd33334",
+    "semantic_hash": ""
+  },
+  "bitacora/2026-07-09.md": {
+    "mtime": 1783614124.9997332,
+    "ast_hash": "55bfea074687db525c8db903dd96e4e2",
+    "semantic_hash": ""
+  },
+  "bitacora/2026-07-10.md": {
+    "mtime": 1783637563.0509477,
+    "ast_hash": "430a7a37d8cfd5f0c26cb4d23a9c3d7d",
+    "semantic_hash": ""
+  },
+  "bitacora/2026-07-11.md": {
+    "mtime": 1783805953.843496,
+    "ast_hash": "6387eda8cff31b0d280842a8b319a61f",
+    "semantic_hash": ""
+  },
+  "bitacora/2026-07-14.md": {
+    "mtime": 1784026570.1538134,
+    "ast_hash": "937be36fe52640848eb0918bd7209feb",
+    "semantic_hash": ""
+  },
+  "bitacora/2026-07-28.md": {
+    "mtime": 1785225666.4657903,
+    "ast_hash": "218c917d5b4a2c97db5f7897834ac9b3",
+    "semantic_hash": ""
+  },
+  "public/robots.txt": {
+    "mtime": 1783721448.1846457,
+    "ast_hash": "62d2658cb0c7af890968d5303455e118",
+    "semantic_hash": ""
+  },
+  "public/favicon.svg": {
+    "mtime": 1783613427.4161196,
+    "ast_hash": "a4db5c15eb3e0ee8bf96888c826636b1",
+    "semantic_hash": ""
+  },
+  "public/og-default.png": {
+    "mtime": 1783721438.6850421,
+    "ast_hash": "1d136821ef1a257836653bd5d1143af9",
+    "semantic_hash": ""
+  }
+}

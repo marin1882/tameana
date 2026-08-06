@@ -1,0 +1,36 @@
+{
+  "name": "tameana",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "cf-dev": "wrangler dev",
+    "cf-deploy": "astro build && wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply tameana-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply tameana-db --remote",
+    "db:seed:local": "wrangler d1 execute tameana-db --local --file=src/db/seed.sql",
+    "db:seed:remote": "wrangler d1 execute tameana-db --remote --file=src/db/seed.sql"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^14.1.0",
+    "@astrojs/sitemap": "^3.7.0",
+    "@fontsource/fraunces": "^5.2.0",
+    "@fontsource/nunito-sans": "^5.2.0",
+    "@libsql/client": "^0.17.4",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^7.0.0",
+    "date-fns": "^4.4.0",
+    "date-fns-tz": "^3.2.0",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "resend": "^6.17.2",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.8.0",
+    "zod": "^4.4.3"
+  }
+}

@@ -1,0 +1,88 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+
+export const prerender = true;
+
+const modalidades = [
+  {
+    icon: 'adultos',
+    drawnIcon: 'adultos',
+    title: 'Tameana para adultos',
+    description: 'Sesiones individuales de Tameana para reconectar con tu energía y liberar bloqueos emocionales.',
+    slug: 'adultos',
+  },
+  {
+    icon: 'ninos',
+    drawnIcon: 'ninos',
+    title: 'Tameana para niños',
+    description: 'Una adaptación suave de la técnica para los más pequeños, ayudándoles a equilibrar su energía.',
+    slug: 'ninos',
+    detalle: 'La infancia es una etapa de gran sensibilidad y apertura. Los niños perciben el mundo de una manera profunda, y su energía responde con naturalidad a los cambios, las emociones y el entorno que les rodea.\n\nTameana para niños es una práctica energética que busca acompañarlos de forma respetuosa, favoreciendo un estado de calma, equilibrio y bienestar. A través del trabajo con cuarzos y geometrías sagradas, se crea un campo de alta vibración que sostiene al niño desde la suavidad, respetando siempre su propio ritmo y sus necesidades. Cada sesión se adapta de manera individual, ofreciendo un espacio seguro donde pueda relajarse y conectar con su equilibrio natural.\n\nMuchas familias recurren a esta práctica como un acompañamiento en momentos de cambios, procesos emocionales, inquietud o adaptación a nuevas situaciones, así como una forma de favorecer su bienestar energético. Cada niño vive la experiencia de manera única, manifestando los efectos según su propia sensibilidad.\n\nTameana no sustituye la atención médica, psicológica o educativa cuando esta sea necesaria, sino que puede integrarse como una práctica complementaria dentro de un enfoque de cuidado integral. Desde el respeto, el amor y la escucha, acompaña al niño para que pueda expresar con mayor armonía todo su potencial y su esencia.',
+  },
+  {
+    icon: 'espacios',
+    drawnIcon: 'espacios',
+    title: 'Hama Ambientes',
+    description: 'Limpieza y armonización energética de hogares, consultas y lugares de trabajo.',
+    slug: 'espacios',
+    detalle: 'Los espacios también guardan memoria y vibración. Hama Ambientes, una práctica de Tameana, trabaja sobre la energía de hogares, negocios y otros lugares para favorecer su armonización y elevar su frecuencia vibratoria.\n\nMediante la disposición de cuarzos y símbolos específicos, se crea un campo de alta vibración que acompaña los procesos de limpieza, equilibrio y expansión energética del espacio. El propósito es favorecer ambientes donde resulte más fácil sentir paz, claridad, bienestar y conexión.\n\nCada sesión se realiza desde el respeto, la intención y la confianza en la inteligencia del propio campo energético, permitiendo que el espacio sostenga con mayor armonía a quienes lo habitan.',
+  },
+  {
+    icon: 'grupal',
+    drawnIcon: 'grupal',
+    title: 'Tameana grupal',
+    description: 'Sesiones en grupo donde la energía colectiva potencia el trabajo individual de cada participante.',
+    slug: 'grupal',
+  },
+  {
+    icon: 'animales',
+    drawnIcon: 'animales',
+    title: 'Tameana para animales',
+    description: 'Los animales también se benefician de la armonización energética. Sesiones para mascotas y otros animales.',
+    slug: 'animales',
+    detalle: 'Los animales son seres profundamente sensibles y perciben la energía de una forma natural. Tameana para animales es una práctica energética que busca acompañarlos desde el respeto, favoreciendo un estado de armonía, calma y equilibrio en su propio proceso.\n\nA través del trabajo con cuarzos y geometrías sagradas, se genera un campo de alta vibración que actúa de manera suave y no invasiva, respetando siempre el ritmo y las necesidades de cada animal. La sesión puede realizarse tanto de forma presencial como a distancia, ya que la intención es conectar con su campo energético para acompañar aquello que necesite en ese momento.\n\nEsta práctica puede ser un apoyo en situaciones de estrés, cambios de entorno, procesos de adaptación, miedos o simplemente como una forma de favorecer su bienestar energético y fortalecer el vínculo entre el animal y su cuidador.\n\nCada animal responde de manera única. Algunos muestran una profunda relajación durante la sesión, mientras que otros manifiestan cambios de forma más sutil en los días posteriores. Tameana no sustituye la atención veterinaria, sino que puede integrarse como un complemento dentro de un enfoque de cuidado integral, acompañando al animal desde una mirada amorosa, consciente y respetuosa.',
+  },
+];
+---
+
+<PageLayout
+  title="Tameana"
+  description="Descubre las 5 modalidades de Tameana: para adultos, niños, espacios, grupal y para animales. Reserva tu sesión."
+>
+  <div class="max-w-4xl mx-auto space-y-12">
+    <div class="space-y-4 text-center">
+      <h1 class="font-serif text-3xl md:text-4xl text-ink">Tameana</h1>
+    </div>
+
+    <div class="space-y-6 text-ink/80 leading-relaxed max-w-2xl mx-auto">
+      <div>
+        <h2 class="font-serif text-lg text-ink mb-2">¿Qué es Tameana?</h2>
+        <p>Tameana es una terapia vibracional de sanación energética de origen contemporáneo que utiliza cristales de cuarzo, geometría sagrada y símbolos específicos con el propósito de favorecer estados de relajación, equilibrio y bienestar integral. Durante una sesión, los cristales se colocan alrededor de la persona, creando un espacio de calma y recogimiento. Muchas personas describen la experiencia como profundamente relajante y afirman sentir una mayor sensación de paz, claridad mental y armonía emocional al finalizar. Sin embargo, estos efectos son experiencias subjetivas y pueden variar de una persona a otra. Tameana se considera una práctica de bienestar complementaria y no sustituye la atención médica, psicológica ni otros tratamientos sanitarios cuando sean necesarios. Su objetivo es ofrecer un espacio de relajación y acompañamiento que favorezca el autocuidado y la conexión con uno mismo.</p>
+      </div>
+
+      <div>
+        <h2 class="font-serif text-lg text-ink mb-2">¿Cómo es una sesión?</h2>
+        <p>Una sesión de Tameana se desarrolla en un ambiente tranquilo y acogedor. La persona permanece tumbada y vestida cómodamente mientras el terapeuta dispone los cristales siguiendo el protocolo de la técnica. No requiere manipulación física y la experiencia suele transcurrir en silencio o con música suave, favoreciendo un estado de profunda relajación. Puede hacerse presencial o a distancia. Y en ambos casos tiene una duración de una hora aproximadamente.</p>
+      </div>
+
+      <div>
+        <h2 class="font-serif text-lg text-ink mb-2">¿Para quién está indicada?</h2>
+        <p>Tameana puede ser una opción para quienes desean: reducir el estrés y las tensiones del día a día; desbloquear nudos que puedan haberse generado en el campo energético; disfrutar de un momento de calma y desconexión; favorecer el equilibrio emocional y el bienestar personal; incorporar una práctica complementaria dentro de su rutina de autocuidado. Cada experiencia es única, por lo que los beneficios percibidos pueden ser diferentes en cada persona.</p>
+      </div>
+    </div>
+
+    <div class="max-w-[800px] mx-auto flex flex-col gap-4">
+      {modalidades.map((mod) => (
+        <ServiceCard
+          icon={mod.icon}
+          drawnIcon={mod.drawnIcon}
+          title={mod.title}
+          description={mod.description}
+          slug={mod.slug}
+          detalle={mod.detalle}
+        />
+      ))}
+    </div>
+  </div>
+</PageLayout>

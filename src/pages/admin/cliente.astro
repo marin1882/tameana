@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { env } from 'cloudflare:workers';
+import { getDb } from '../../db';
+import { bookings, services, clients } from '../../db/schema';
+import { eq, desc } from 'drizzle-orm';
+
+export const prerender = false;
+
+const email = Astro.url.searchParams.get('email');
+const db = getDb(env);
+
+let cliente: any = null;
+let historial: any[] = [];
+let servicioNombre: Record<number, string> = {};
+let error = '';
+
+if (!email) {
+  error = 'Falta el parámetro email.';
+} else {
+  try {
+    // Cargar servicios
+    const serviciosList = await db.select().from(services).all();
+    for (const s of serviciosList) {
+      servicioNombre[s.id] = s.nombre;
+    }
+
+    // Cargar cliente
+    cliente = await db.query.clients.findFirst({
+      where: eq(clients.email, email.toLowerCase()),
+    });
+
+    if (cliente) {
+      // Cargar historial de reservas
+      historial = await db.query.bookings.findMany({
+        where: (b, { eq }) => eq(b.email, email.toLowerCase()),
+        orderBy: [desc(bookings.fecha), desc(bookings.hora_inicio)],
+      });
+    }
+  } catch (err: any) {
+    error = 'Error al cargar los datos del cliente.';
+    console.error('[admin] Error en cliente:', err?.message || err);
+  }
+}
+---
+
+<BaseLayout title="Admin — Cliente" description="Ficha de cliente">
+  <div class="max-w-4xl mx-auto space-y-8 px-4 py-8">
+    <div class="flex items-center justify-between">
+      <a href="/admin" class="text-sm text-ink/40 hover:text-ink transition-colors">
+        &larr; Volver al panel
+      </a>
+    </div>
+
+    {error && (
+      <div style="background: var(--color-error-bg); color: var(--color-error-text); border: 1px solid var(--color-error-text);" class="rounded-2xl px-6 py-4 text-center">
+        <p>{error}</p>
+        <a href="/admin" class="text-sm underline mt-2 inline-block">Volver al panel</a>
+      </div>
+    )}
+
+    {!error && !cliente && (
+      <div class="bg-surface rounded-2xl px-6 py-8 text-center">
+        <p class="text-ink/50 text-lg">Cliente no encontrado</p>
+        <p class="text-ink/30 text-sm mt-1">{email}</p>
+        <a href="/admin" class="text-sm text-primary underline mt-4 inline-block">Volver al panel</a>
+      </div>
+    )}
+
+    {cliente && (
+      <>
+        <!-- Datos del cliente -->
+        <section class="bg-surface rounded-2xl p-6 space-y-4">
+          <h1 class="font-serif text-2xl text-ink">{cliente.nombre}</h1>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <div>
+              <span class="text-ink/50">Email</span>
+              <p class="text-ink">{cliente.email}</p>
+            </div>
+            <div>
+              <span class="text-ink/50">Teléfono</span>
+              <p class="text-ink">{cliente.telefono}</p>
+            </div>
+          </div>
+
+          <!-- Notas generales -->
+          <div class="space-y-2">
+            <label for="client-notes" class="text-sm font-medium text-ink/70">Notas generales</label>
+            <textarea
+              id="client-notes"
+              rows="3"
+              class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors resize-none placeholder:text-ink/30"
+              placeholder="Anotaciones sobre este cliente..."
+            >{cliente.notas || ''}</textarea>
+            <button
+              id="save-client-notes"
+              class="px-4 py-2 text-sm font-medium rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+              data-email={cliente.email}
+            >
+              Guardar notas
+            </button>
+          </div>
+        </section>
+
+        <!-- Historial de reservas -->
+        <section>
+          <h2 class="font-serif text-xl text-ink mb-4">
+            Historial de reservas
+            <span class="text-ink/30 text-base ml-2">({historial.length})</span>
+          </h2>
+
+          {historial.length === 0 ? (
+            <p class="text-ink/40 bg-surface rounded-xl p-6 text-center">Sin reservas registradas.</p>
+          ) : (
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-primary/20 text-ink/50 text-left">
+                    <th class="py-2 pr-4 font-medium">Fecha</th>
+                    <th class="py-2 pr-4 font-medium">Hora</th>
+                    <th class="py-2 pr-4 font-medium">Servicio</th>
+                    <th class="py-2 pr-4 font-medium">Nota admin</th>
+                    <th class="py-2 font-medium">Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historial.map((b) => (
+                    <tr class="border-b border-ink/5 hover:bg-surface/50 transition-colors">
+                      <td class="py-3 pr-4 text-ink">
+                        {new Date(b.fecha + 'T00:00:00').toLocaleDateString('es-ES', {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short',
+                        })}
+                      </td>
+                      <td class="py-3 pr-4 text-ink">{b.hora_inicio}</td>
+                      <td class="py-3 pr-4 text-ink/70">{servicioNombre[b.service_id] || '—'}</td>
+                      <td class="py-3 pr-4 text-ink/50 text-xs max-w-[200px] truncate">{b.nota_admin || '—'}</td>
+                      <td class="py-3">
+                        {b.estado === 'pendiente' ? (
+                          <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-accent-soft text-ink">Pendiente</span>
+                        ) : b.estado === 'confirmada' ? (
+                          <span style="background: var(--color-success-bg); color: var(--color-success-text);" class="inline-block px-2 py-0.5 rounded-full text-xs font-medium">Confirmada</span>
+                        ) : (
+                          <span style="background: var(--color-error-bg); color: var(--color-error-text);" class="inline-block px-2 py-0.5 rounded-full text-xs font-medium">Cancelada</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </>
+    )}
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  // ── Guardar notas del cliente ──
+  var saveBtn = document.getElementById('save-client-notes');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async function() {
+      var email = this.getAttribute('data-email');
+      var notas = document.getElementById('client-notes')?.value || '';
+
+      this.disabled = true;
+      this.textContent = 'Guardando...';
+
+      try {
+        var res = await fetch('/_actions/updateClientNote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, notas: notas }),
+        });
+        var data = await res.json();
+        if (!res.ok || data.error) {
+          alert('Error al guardar: ' + ((data.error && data.error.message) || 'Desconocido'));
+        } else {
+          this.textContent = '✓ Guardado';
+          setTimeout(() => { this.textContent = 'Guardar notas'; }, 1500);
+        }
+      } catch(e) {
+        alert('Error de conexión');
+      } finally {
+        this.disabled = false;
+      }
+    });
+  }
+</script>

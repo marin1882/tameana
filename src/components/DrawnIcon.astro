@@ -1,0 +1,68 @@
+---
+// DrawnIcon: renderiza SVGs dibujados de src/icons/drawn/ inline con fill="currentColor"
+// para que hereden el color del tema (claro/oscuro) igual que el resto de iconos.
+
+import adultosRaw from '../icons/drawn/adultos.svg?raw';
+import animalesRaw from '../icons/drawn/animales.svg?raw';
+import cartasRaw from '../icons/drawn/cartas.svg?raw';
+import contactoRaw from '../icons/drawn/contacto.svg?raw';
+import espaciosRaw from '../icons/drawn/espacios.svg?raw';
+import grupalRaw from '../icons/drawn/grupal.svg?raw';
+import ninosRaw from '../icons/drawn/ninos.svg?raw';
+import onlineRaw from '../icons/drawn/online.svg?raw';
+import preguntasFrecuentesRaw from '../icons/drawn/preguntas-frecuentes.svg?raw';
+import presencialRaw from '../icons/drawn/presencial.svg?raw';
+import quienSoyRaw from '../icons/drawn/quien-soy.svg?raw';
+import sesionesRaw from '../icons/drawn/sesiones.svg?raw';
+import tameanaRaw from '../icons/drawn/tameana.svg?raw';
+import testimoniosRaw from '../icons/drawn/testimonios.svg?raw';
+
+// Constantes a nivel módulo — se calculan una vez en build, no por cada render
+
+const sizeMap: Record<string, string> = {
+  sm: 'w-6 h-6',
+  md: 'w-10 h-10',
+  lg: 'w-16 h-16',
+  xl: 'w-24 h-24',
+};
+
+// SVGs pre-procesados: fill="black" → fill="currentColor" (una sola vez en build)
+const processedSvgs: Record<string, string> = {
+  'adultos': adultosRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'animales': animalesRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'cartas': cartasRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'contacto': contactoRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'espacios': espaciosRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'grupal': grupalRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'ninos': ninosRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'online': onlineRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'preguntas-frecuentes': preguntasFrecuentesRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'presencial': presencialRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'quien-soy': quienSoyRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'sesiones': sesionesRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'tameana': tameanaRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+  'testimonios': testimoniosRaw.replace(/fill="black"/g, 'fill="currentColor"'),
+};
+
+export interface Props {
+  name: 'quien-soy' | 'sesiones' | 'tameana' | 'adultos' | 'ninos' | 'espacios' | 'animales' | 'grupal'
+    | 'cartas' | 'contacto' | 'online' | 'preguntas-frecuentes' | 'presencial' | 'testimonios';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const { name, size = 'md', class: className = '' } = Astro.props;
+
+const processedSvg = processedSvgs[name] || '';
+---
+
+{
+  processedSvg ? (
+    <span
+      class={[sizeMap[size], className, 'inline-block [&>svg]:w-full [&>svg]:h-full'].join(' ')}
+      set:html={processedSvg}
+    />
+  ) : (
+    <span class={[sizeMap[size], className].join(' ')} />
+  )
+}

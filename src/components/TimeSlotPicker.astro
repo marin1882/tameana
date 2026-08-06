@@ -1,0 +1,59 @@
+---
+// Lista de horas disponibles como botones seleccionables.
+export interface Props {
+  slots: { hora: string }[];
+  selectedHora?: string;
+}
+
+const { slots, selectedHora } = Astro.props;
+---
+
+<div id="time-slot-picker" class="w-full max-w-sm mx-auto">
+  {slots.length === 0 ? (
+    <p class="text-center text-ink/50 py-4">No hay horas disponibles para este día.</p>
+  ) : (
+    <>
+      <p class="text-sm text-ink/50 mb-3 text-center">
+        {slots.length} {slots.length === 1 ? 'hora disponible' : 'horas disponibles'}
+      </p>
+      <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+        {slots.map((slot) => (
+          <button
+            type="button"
+            data-hora={slot.hora}
+            class:list={[
+              'py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200',
+              {
+                'bg-primary text-ink': slot.hora === selectedHora,
+                'bg-surface text-ink/70 hover:bg-accent-soft hover:text-ink': slot.hora !== selectedHora,
+              },
+            ]}
+          >
+            {slot.hora}
+          </button>
+        ))}
+      </div>
+    </>
+  )}
+  <input type="hidden" id="selected-hora" value={selectedHora || ''} />
+</div>
+
+<script>
+  document.querySelectorAll('#time-slot-picker button[data-hora]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const hora = (btn as HTMLElement).dataset.hora!;
+      (document.getElementById('selected-hora') as HTMLInputElement).value = hora;
+      // Refrescar estilos visuales
+      document.querySelectorAll('#time-slot-picker button[data-hora]').forEach(b => {
+        const h = (b as HTMLElement).dataset.hora;
+        if (h === hora) {
+          b.className = 'py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 bg-primary text-ink';
+        } else {
+          b.className = 'py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 bg-surface text-ink/70 hover:bg-accent-soft hover:text-ink';
+        }
+      });
+      // Emitir evento
+      document.dispatchEvent(new CustomEvent('timeslot:select', { detail: { hora } }));
+    });
+  });
+</script>

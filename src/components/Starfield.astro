@@ -1,0 +1,206 @@
+---
+// Campo de estrellas + constelación de las Pléyades.
+// Solo visible en modo oscuro.
+---
+
+<div
+  id="starfield"
+  class="fixed inset-0 pointer-events-none overflow-hidden"
+  style="display: none;"
+  aria-hidden="true"
+>
+  <!-- Capa 1: estrellas dispersas (tiny dots generados con box-shadow vía CSS) -->
+  <div class="stars-layer absolute inset-0"></div>
+  <div class="stars-layer-2 absolute inset-0"></div>
+  <div class="stars-layer-3 absolute inset-0"></div>
+
+  <!-- Capa 2: constelación de las Pléyades (SVG) -->
+  <svg
+    class="pleiades absolute"
+    viewBox="0 0 200 180"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style="top: 12%; right: 8%; width: 220px; height: 200px; opacity: 0;"
+  >
+    <!-- Líneas de la constelación -->
+    <g stroke="var(--color-primary)" stroke-opacity="0.12" stroke-width="0.5" stroke-dasharray="2 3">
+      <!-- Conexiones entre las estrellas principales -->
+      <line x1="100" y1="90" x2="85" y2="55" />
+      <line x1="100" y1="90" x2="125" y2="65" />
+      <line x1="100" y1="90" x2="70" y2="110" />
+      <line x1="100" y1="90" x2="135" y2="105" />
+      <line x1="100" y1="90" x2="90" y2="135" />
+      <line x1="100" y1="90" x2="115" y2="140" />
+      <line x1="85" y1="55" x2="60" y2="40" />
+      <line x1="125" y1="65" x2="150" y2="80" />
+      <line x1="70" y1="110" x2="45" y2="125" />
+    </g>
+
+    <!-- Estrellas -->
+    <g fill="var(--color-accent-soft)">
+      <!-- Alcyone — la más brillante, centro -->
+      <circle cx="100" cy="90" r="2.5" opacity="0.6" />
+      <circle cx="100" cy="90" r="5" opacity="0.1" />
+
+      <!-- Atlas -->
+      <circle cx="85" cy="55" r="1.8" opacity="0.45" />
+      <circle cx="85" cy="55" r="3.5" opacity="0.08" />
+
+      <!-- Electra -->
+      <circle cx="125" cy="65" r="1.8" opacity="0.45" />
+      <circle cx="125" cy="65" r="3.5" opacity="0.08" />
+
+      <!-- Maia -->
+      <circle cx="70" cy="110" r="1.6" opacity="0.40" />
+      <circle cx="70" cy="110" r="3" opacity="0.07" />
+
+      <!-- Merope -->
+      <circle cx="135" cy="105" r="1.6" opacity="0.40" />
+      <circle cx="135" cy="105" r="3" opacity="0.07" />
+
+      <!-- Taygeta -->
+      <circle cx="90" cy="135" r="1.5" opacity="0.35" />
+      <circle cx="90" cy="135" r="2.8" opacity="0.06" />
+
+      <!-- Pleione -->
+      <circle cx="115" cy="140" r="1.4" opacity="0.35" />
+      <circle cx="115" cy="140" r="2.5" opacity="0.06" />
+
+      <!-- Celaeno -->
+      <circle cx="60" cy="40" r="1.3" opacity="0.30" />
+
+      <!-- Sterope -->
+      <circle cx="150" cy="80" r="1.3" opacity="0.30" />
+
+      <!-- Asterope (segunda de Sterope) -->
+      <circle cx="45" cy="125" r="1.1" opacity="0.25" />
+    </g>
+
+    <!-- Estrellitas del cúmulo (las más tenues del grupo) -->
+    <g fill="var(--color-primary)" opacity="0.2">
+      <circle cx="95" cy="75" r="0.6" />
+      <circle cx="108" cy="80" r="0.5" />
+      <circle cx="92" cy="100" r="0.7" />
+      <circle cx="110" cy="95" r="0.5" />
+      <circle cx="80" cy="85" r="0.6" />
+      <circle cx="120" cy="88" r="0.5" />
+      <circle cx="97" cy="115" r="0.6" />
+      <circle cx="105" cy="120" r="0.5" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  /* ── Capas de estrellas dispersas vía box-shadow ── */
+  .stars-layer::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow:
+      /* Distribución pseudo-aleatoria de estrellitas */
+       40vw 15vh 0 0 var(--color-accent-soft),
+       65vw 25vh 0 0 var(--color-primary),
+       15vw 30vh 0 0 var(--color-accent-soft),
+       80vw 10vh 0 0 var(--color-primary),
+       55vw 45vh 0 0 var(--color-accent-soft),
+       25vw 60vh 0 0 var(--color-primary),
+       70vw 55vh 0 0 var(--color-accent-soft),
+       10vw 70vh 0 0 var(--color-primary),
+       85vw 70vh 0 0 var(--color-accent-soft),
+       50vw 80vh 0 0 var(--color-primary),
+       30vw 85vh 0 0 var(--color-accent-soft),
+       75vw 90vh 0 0 var(--color-primary),
+        5vw 50vh 0 0 var(--color-accent-soft),
+       90vw 40vh 0 0 var(--color-primary),
+       20vw 20vh 0 0 var(--color-accent-soft),
+       60vw 35vh 0 0 var(--color-primary),
+       45vw 65vh 0 0 var(--color-accent-soft),
+       35vw 45vh 0 0 var(--color-primary),
+       95vw 60vh 0 0 var(--color-accent-soft),
+        8vw 90vh 0 0 var(--color-primary);
+    opacity: 0.4;
+  }
+
+  .stars-layer-2::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow:
+       12vw 12vh 0 0 var(--color-primary),
+       72vw 18vh 0 0 var(--color-accent-soft),
+       28vw 38vh 0 0 var(--color-primary),
+       82vw 32vh 0 0 var(--color-accent-soft),
+       48vw 52vh 0 0 var(--color-primary),
+       18vw 72vh 0 0 var(--color-accent-soft),
+       68vw 62vh 0 0 var(--color-primary),
+       38vw 78vh 0 0 var(--color-accent-soft),
+       88vw 82vh 0 0 var(--color-primary),
+       55vw 15vh 0 0 var(--color-accent-soft),
+       92vw 22vh 0 0 var(--color-primary),
+        6vw 35vh 0 0 var(--color-accent-soft),
+       22vw 55vh 0 0 var(--color-primary),
+       78vw 75vh 0 0 var(--color-accent-soft),
+       42vw 88vh 0 0 var(--color-primary),
+       95vw  8vh 0 0 var(--color-accent-soft),
+       52vw 92vh 0 0 var(--color-primary),
+       15vw 48vh 0 0 var(--color-accent-soft),
+       62vw 42vh 0 0 var(--color-primary),
+       32vw 28vh 0 0 var(--color-accent-soft);
+    opacity: 0.25;
+  }
+
+  .stars-layer-3::after {
+    content: '';
+    position: absolute;
+    width: 1.5px;
+    height: 1.5px;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow:
+        8vw 22vh 0 0 var(--color-primary),
+       58vw  8vh 0 0 var(--color-accent-soft),
+       76vw 48vh 0 0 var(--color-primary),
+       22vw 82vh 0 0 var(--color-accent-soft),
+       85vw 58vh 0 0 var(--color-primary),
+       34vw 68vh 0 0 var(--color-accent-soft),
+       68vw 28vh 0 0 var(--color-primary),
+       48vw 42vh 0 0 var(--color-accent-soft),
+       12vw 65vh 0 0 var(--color-primary),
+       92vw 45vh 0 0 var(--color-accent-soft),
+       44vw 12vh 0 0 var(--color-primary),
+       28vw 92vh 0 0 var(--color-accent-soft),
+       55vw 72vh 0 0 var(--color-primary),
+       72vw 88vh 0 0 var(--color-accent-soft),
+       18vw 32vh 0 0 var(--color-primary);
+    opacity: 0.2;
+  }
+
+  /* ── Solo visible en modo oscuro ── */
+  :root[data-theme="dark"] #starfield {
+    display: block !important;
+  }
+
+  :root[data-theme="dark"] .pleiades {
+    opacity: 1 !important;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) #starfield {
+      display: block !important;
+    }
+    :root:not([data-theme="light"]) .pleiades {
+      opacity: 1 !important;
+    }
+  }
+
+  /* Oculto explícitamente en modo claro */
+  :root[data-theme="light"] #starfield {
+    display: none !important;
+  }
+</style>

@@ -1,0 +1,16 @@
+# Secrets para desarrollo local — copiar a .dev.vars y rellenar
+
+# Resend (emails)
+RESEND_API_KEY=re_xxxxxxxx
+THERAPIST_EMAIL=marin1882@gmail.com
+RESEND_FROM=onboarding@resend.dev
+
+# Admin
+ADMIN_PASSWORD=secreto
+
+# Turnstile (anti-spam)
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+
+# Stripe (futuro)
+PAYMENTS_ENABLED=false

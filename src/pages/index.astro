@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BreathingLogo from '../components/BreathingLogo.astro';
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Tameana — Terapia y acompañamiento"
+  description="Bienvenida a Tameana. Terapia y acompañamiento personal. Entra y descubre un espacio de calma."
+  withHeader={false}
+>
+  <div class="min-h-screen flex flex-col items-center justify-center bg-bg">
+    <BreathingLogo />
+  </div>
+</BaseLayout>

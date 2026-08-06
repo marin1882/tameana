@@ -1,0 +1,389 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import BookingCalendar from '../components/BookingCalendar.astro';
+import { env } from 'cloudflare:workers';
+import { getDb } from '../db';
+import { services } from '../db/schema';
+import { eq } from 'drizzle-orm';
+import { getAvailableDaysInMonth } from '../lib/slots';
+
+export const prerender = false;
+
+const serviceSlug = Astro.url.searchParams.get('servicio');
+const db = getDb(env);
+
+let dbError = '';
+let allServices: any[] = [];
+let selectedService: any = null;
+let availableDays: string[] = [];
+let serviceId = 0;
+
+try {
+  allServices = await db.query.services.findMany({
+    where: eq(services.activo, true),
+    orderBy: (s, { asc }) => [asc(s.orden)],
+  });
+
+  selectedService = serviceSlug
+    ? allServices.find((s) => s.slug === serviceSlug) || null
+    : null;
+
+  if (selectedService) {
+    serviceId = selectedService.id;
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const daysSet = await getAvailableDaysInMonth(db, selectedService.id, currentYear, currentMonth);
+    availableDays = Array.from(daysSet).sort();
+  }
+} catch (err: any) {
+  dbError = 'No se ha podido cargar la disponibilidad. Inténtalo de nuevo en unos segundos.';
+  console.error('Error en /reservar:', err?.message || err);
+}
+
+const hasPreselectedService = !!selectedService;
+const turnstileSiteKey = env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+---
+
+<PageLayout
+  title="Reservar sesión"
+  description="Reserva tu sesión de Tameana. Elige el servicio, la fecha y la hora que mejor te venga."
+>
+  <div class:list={['max-w-2xl mx-auto', { 'space-y-8': !selectedService, 'space-y-4': selectedService }]}>
+    <h1 class:list={['font-serif text-center text-ink', { 'text-3xl md:text-4xl': !selectedService, 'text-2xl md:text-3xl': selectedService }]}>
+      Reservar una sesión
+    </h1>
+
+    {dbError && (
+      <div style="background: var(--color-error-bg); color: var(--color-error-text); border: 1px solid var(--color-error-text);" class="rounded-2xl px-6 py-4 text-center max-w-md mx-auto">
+        <p class="font-medium">{dbError}</p>
+        <p style="color: var(--color-error-text); opacity: 0.8;" class="text-sm mt-1">
+          Mientras tanto, puedes escribirnos a{' '}
+          <a href="mailto:marin1882@gmail.com" class="underline">marin1882@gmail.com</a>
+        </p>
+      </div>
+    )}
+
+    <!-- Paso 1: Selector de servicio (solo sin servicio preseleccionado) -->
+    {!selectedService && (
+      <section id="step-service" class="space-y-4">
+        <p class="text-ink/50 text-center text-sm">Paso 1 de 3</p>
+        <h2 class="font-serif text-xl text-ink text-center">Elige el servicio</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+          {allServices.map((s) => (
+            <a
+              href={`/reservar?servicio=${s.slug}`}
+              class:list={[
+                'block p-4 rounded-xl border-2 transition-all duration-200 text-center',
+                {
+                  'border-primary bg-primary/10 text-ink font-medium': s.slug === serviceSlug,
+                  'border-surface hover:border-primary/40 text-ink/70 hover:text-ink': s.slug !== serviceSlug,
+                },
+              ]}
+            >
+              <span class="font-serif">{s.nombre}</span>
+              <span class="block text-xs text-ink/40 mt-1">{s.duracion_min} min</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Resumen compacto (solo con servicio preseleccionado) -->
+    {selectedService && (
+      <div id="service-summary" class="flex items-center justify-between bg-surface rounded-xl px-4 py-3 max-w-sm mx-auto">
+        <div>
+          <span class="font-serif text-ink font-medium">{selectedService.nombre}</span>
+          <span class="text-ink/50 text-sm"> · {selectedService.duracion_min} min</span>
+        </div>
+        <a href="/reservar" class="text-xs text-primary hover:text-ink transition-colors whitespace-nowrap">
+          cambiar
+        </a>
+      </div>
+    )}
+
+    {!dbError && selectedService && (
+      <>
+        <!-- Paso 2 / Paso 1: Calendario -->
+        <section id="step-calendar" class="space-y-4">
+          <p class="text-ink/50 text-center text-sm">{selectedService ? 'Paso 1 de 2' : 'Paso 2 de 3'}</p>
+          <h2 class="font-serif text-xl text-ink text-center">Elige el día</h2>
+          <input type="hidden" id="cal-service-id" value={serviceId} />
+          <BookingCalendar availableDays={availableDays} />
+        </section>
+
+        <!-- Paso 3 / Paso 2: Horas (se rellena dinámicamente) -->
+        <section id="step-slots" class="space-y-4 hidden">
+          <p class="text-ink/50 text-center text-sm">{selectedService ? 'Paso 2 de 2' : 'Paso 3 de 3'}</p>
+          <h2 class="font-serif text-xl text-ink text-center">Elige la hora</h2>
+          <div id="slots-container"></div>
+        </section>
+
+        <!-- Paso 4: Formulario (aparece tras elegir hora) -->
+        <section id="step-form" class="hidden">
+          <div id="form-container"></div>
+        </section>
+      </>
+    )}
+
+    {!selectedService && (
+      <p class="text-center text-ink/40">Selecciona un servicio para continuar.</p>
+    )}
+  </div>
+</PageLayout>
+
+<script define:vars={{ serviceId, turnstileSiteKey, hasPreselectedService }}>
+  // ── Estado ──
+  let selectedHora = '';
+
+  // ── Cargar slots para una fecha ──
+  async function loadSlots(fecha) {
+    const slotsSection = document.getElementById('step-slots');
+    const slotsContainer = document.getElementById('slots-container');
+    const formSection = document.getElementById('step-form');
+    const formContainer = document.getElementById('form-container');
+
+    formSection.classList.add('hidden');
+    formContainer.innerHTML = '';
+    selectedHora = '';
+
+    if (!fecha) {
+      slotsSection.classList.add('hidden');
+      return;
+    }
+
+    slotsSection.classList.remove('hidden');
+    slotsSection.classList.add('opacity-50');
+    slotsContainer.innerHTML = '<p class="text-center text-ink/30 py-4">Cargando horas...</p>';
+
+    try {
+      const url = '/api/slots?serviceId=' + serviceId + '&fecha=' + fecha;
+      const res = await fetch(url);
+      const result = await res.json();
+
+      if (!res.ok || result.error) {
+        slotsContainer.innerHTML =
+          '<p style="color: var(--color-error-text); background: var(--color-error-bg);" class="text-center rounded-xl py-4 px-4">' +
+          (result.error || 'Error al cargar horas. Intenta de nuevo.') +
+          '</p>';
+        return;
+      }
+
+      const slots = result.slots || [];
+
+      if (slots.length === 0) {
+        slotsContainer.innerHTML =
+          '<p class="text-center text-ink/50 py-4 bg-surface rounded-xl">No hay horas disponibles para este día.</p>';
+      } else {
+        const plural = slots.length === 1 ? 'hora disponible' : 'horas disponibles';
+        let html = '<p class="text-sm text-ink/50 mb-3 text-center">' + slots.length + ' ' + plural + '</p>';
+        html += '<div class="grid grid-cols-3 sm:grid-cols-4 gap-2 max-w-sm mx-auto">';
+        slots.forEach(function(s) {
+          html += '<button type="button" data-hora="' + s.hora + '" class="py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 bg-surface text-ink/70 hover:bg-accent-soft hover:text-ink">' + s.hora + '</button>';
+        });
+        html += '</div>';
+        slotsContainer.innerHTML = html;
+
+        slotsContainer.querySelectorAll('button[data-hora]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var hora = this.dataset.hora;
+            selectedHora = hora;
+
+            slotsContainer.querySelectorAll('button[data-hora]').forEach(function(b) {
+              if (b.dataset.hora === hora) {
+                b.className = 'py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 bg-primary text-ink';
+              } else {
+                b.className = 'py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 bg-surface text-ink/70 hover:bg-accent-soft hover:text-ink';
+              }
+            });
+
+            showForm(fecha, hora);
+          });
+        });
+      }
+    } catch (_err) {
+      slotsContainer.innerHTML = '<p class="text-center text-ink/50 py-4">Error al cargar horas. Intenta de nuevo.</p>';
+    } finally {
+      slotsSection.classList.remove('opacity-50');
+    }
+  }
+
+  // ── Mostrar formulario ──
+  function showForm(fecha, hora) {
+    var formSection = document.getElementById('step-form');
+    var formContainer = document.getElementById('form-container');
+
+    formSection.classList.remove('hidden');
+    formSection.scrollIntoView({ behavior: 'smooth' });
+
+    formContainer.innerHTML =
+      '<h2 class="font-serif text-xl text-ink text-center mb-6">Tus datos</h2>' +
+      '<form id="booking-form" class="w-full max-w-md mx-auto space-y-5">' +
+        '<input type="hidden" name="serviceId" value="' + serviceId + '" />' +
+        '<input type="hidden" name="fecha" value="' + fecha + '" />' +
+        '<input type="hidden" name="hora_inicio" value="' + hora + '" />' +
+
+        '<div>' +
+          '<label for="nombre" class="block text-sm font-medium text-ink/70 mb-1">Nombre *</label>' +
+          '<input type="text" id="nombre" name="nombre" required autocomplete="name" ' +
+            'class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-ink/30" ' +
+            'placeholder="Tu nombre completo" />' +
+        '</div>' +
+
+        '<div>' +
+          '<label for="email" class="block text-sm font-medium text-ink/70 mb-1">Email *</label>' +
+          '<input type="email" id="email" name="email" required autocomplete="email" ' +
+            'class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-ink/30" ' +
+            'placeholder="tu@email.com" />' +
+        '</div>' +
+
+        '<div>' +
+          '<label for="telefono" class="block text-sm font-medium text-ink/70 mb-1">Teléfono *</label>' +
+          '<input type="tel" id="telefono" name="telefono" required autocomplete="tel" ' +
+            'class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-ink/30" ' +
+            'placeholder="+34 6XX XXX XXX" />' +
+        '</div>' +
+
+        '<div>' +
+          '<label for="mensaje" class="block text-sm font-medium text-ink/70 mb-1">Mensaje <span class="text-ink/30">(opcional)</span></label>' +
+          '<textarea id="mensaje" name="mensaje" rows="3" ' +
+            'class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors placeholder:text-ink/30 resize-none" ' +
+            'placeholder="¿Algo que quieras comentar?"></textarea>' +
+        '</div>' +
+
+        '<div class="cf-turnstile" data-sitekey="' + turnstileSiteKey + '" data-theme="auto" data-callback="onTurnstileCallback" data-expired-callback="onTurnstileExpired"></div>' +
+        '<input type="hidden" name="turnstileToken" id="turnstile-token" />' +
+
+        '<label class="flex items-start gap-2 text-sm text-ink/70 cursor-pointer">' +
+          '<input type="checkbox" id="privacy-accept" required ' +
+            'class="mt-0.5 w-4 h-4 rounded border-primary/30 text-primary focus:ring-primary/20 cursor-pointer" />' +
+          '<span>He leído y acepto la <a href="/privacidad" target="_blank" class="text-primary underline">política de privacidad</a> *</span>' +
+        '</label>' +
+
+        '<div id="form-error" style="color: var(--color-error-text); background: var(--color-error-bg);" class="hidden text-sm rounded-xl px-4 py-2"></div>' +
+
+        '<button type="submit" id="form-submit" ' +
+          'class="btn-primary w-full text-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>' +
+          'Enviar solicitud' +
+        '</button>' +
+      '</form>';
+
+    // Cargar Turnstile si no está ya
+    if (!document.querySelector('script[src*="turnstile"]')) {
+      var tsScript = document.createElement('script');
+      tsScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      tsScript.async = true;
+      tsScript.defer = true;
+      document.head.appendChild(tsScript);
+    } else if (typeof turnstile !== 'undefined') {
+      setTimeout(function() { turnstile.render('.cf-turnstile'); }, 100);
+    }
+
+    setupFormHandlers();
+  }
+
+  // ── Handlers del formulario ──
+  function setupFormHandlers() {
+    var turnstileOk = false;
+
+    function updateSubmitState() {
+      var privacyChecked = document.getElementById('privacy-accept')?.checked || false;
+      document.getElementById('form-submit').disabled = !(turnstileOk && privacyChecked);
+    }
+
+    window.onTurnstileCallback = function(token) {
+      document.getElementById('turnstile-token').value = token;
+      turnstileOk = true;
+      updateSubmitState();
+    };
+
+    window.onTurnstileExpired = function() {
+      document.getElementById('turnstile-token').value = '';
+      turnstileOk = false;
+      updateSubmitState();
+    };
+
+    // El checkbox de privacidad también controla el botón
+    var privacyCheckbox = document.getElementById('privacy-accept');
+    if (privacyCheckbox) {
+      privacyCheckbox.addEventListener('change', updateSubmitState);
+    }
+
+    var form = document.getElementById('booking-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var errorDiv = document.getElementById('form-error');
+      var submitBtn = document.getElementById('form-submit');
+      errorDiv.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      var formData = new FormData(form);
+      var data = {};
+      formData.forEach(function(v, k) { data[k] = v; });
+      data.serviceId = Number(data.serviceId);
+      data.privacyAccepted = true;
+
+      try {
+        var res = await fetch('/_actions/createBooking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        var result = await res.json();
+
+        if (!res.ok) {
+          var msg = (result && result.message) || 'Error al procesar la reserva.';
+          errorDiv.textContent = msg;
+          errorDiv.classList.remove('hidden');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Enviar solicitud';
+          if (typeof turnstile !== 'undefined') {
+            turnstile.reset();
+          }
+          document.getElementById('turnstile-token').value = '';
+          return;
+        }
+
+        window.location.href = '/gracias';
+      } catch (_err) {
+        errorDiv.textContent = 'Error de conexión. Inténtalo de nuevo.';
+        errorDiv.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar solicitud';
+      }
+    });
+  }
+
+  // ── Escuchar selección del calendario ──
+  document.addEventListener('calendar:select', function(e) {
+    var fecha = e.detail && e.detail.fecha;
+    if (fecha) {
+      loadSlots(fecha);
+    }
+  });
+
+  // ── Escuchar cambio de mes en el calendario ──
+  document.addEventListener('calendar:monthChange', async function(e) {
+    var detail = e.detail;
+    if (!detail || !serviceId) return;
+    var year = detail.year;
+    var month = detail.month;
+
+    try {
+      var url = '/api/available-days?serviceId=' + serviceId + '&year=' + year + '&month=' + month;
+      var res = await fetch(url);
+      var result = await res.json();
+      var days = (result && result.days) || [];
+      document.dispatchEvent(new CustomEvent('calendar:updateDays', {
+        detail: { days: days }
+      }));
+    } catch (_err) {
+      document.dispatchEvent(new CustomEvent('calendar:updateDays', {
+        detail: { days: [] }
+      }));
+    }
+  });
+</script>

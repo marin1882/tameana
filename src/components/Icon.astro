@@ -1,0 +1,47 @@
+---
+export interface Props {
+  name: 'persona' | 'manos' | 'espiral' | 'adultos' | 'ninos' | 'espacios' | 'grupal' | 'animales' | 'corazon' | 'check';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const { name, size = 'md', class: className = '' } = Astro.props;
+
+const sizeMap = {
+  sm: 'w-6 h-6',
+  md: 'w-10 h-10',
+  lg: 'w-16 h-16',
+  xl: 'w-24 h-24',
+};
+
+// SVG paths minimalistas para cada icono
+const paths: Record<string, string> = {
+  persona: 'M100 60 C85 60 75 70 75 85 C75 100 85 105 100 110 C115 105 125 100 125 85 C125 70 115 60 100 60Z M65 160 C65 135 80 125 100 125 C120 125 135 135 135 160',
+  manos: 'M40 80 C30 60 20 70 25 90 L40 140 M50 140 L45 90 C40 80 45 65 55 65 C65 65 65 80 65 90 L65 140 M160 80 C170 60 180 70 175 90 L160 140 M150 140 L155 90 C160 80 155 65 145 65 C135 65 135 80 135 90 L135 140',
+  espiral: 'M100 40 C130 40 155 65 155 95 C155 125 130 155 100 155 C70 155 45 130 45 100 C45 70 70 47 100 47 C120 47 138 63 138 82 C138 101 120 115 100 115 C90 115 78 108 75 98',
+  adultos: 'M100 55 C80 55 70 70 70 85 C70 100 85 110 100 110 C115 110 130 100 130 85 C130 70 120 55 100 55Z M60 170 L70 120 L85 125 M140 170 L130 120 L115 125',
+  ninos: 'M85 80 C82 70 78 60 85 55 C92 50 100 55 100 60 C100 55 108 50 115 55 C122 60 118 70 115 80 M100 80 L100 110 M85 95 L115 95 M75 140 L85 110 L95 115 M125 140 L115 110 L105 115 M100 110 C85 125 85 140 100 145 C115 140 115 125 100 110',
+  espacios: 'M50 150 L50 60 L100 30 L150 60 L150 150 M50 150 L100 120 L150 150 M100 30 L100 120 M75 90 L125 90 M75 110 L125 110 M75 130 L125 130',
+  grupal: 'M60 85 C55 75 48 72 48 80 C48 88 55 92 60 90 M140 85 C145 75 152 72 152 80 C152 88 145 92 140 90 M80 65 C75 58 68 55 68 63 C68 71 76 73 80 72 M120 65 C125 58 132 55 132 63 C132 71 124 73 120 72 M100 70 C95 58 105 58 100 70 M100 70 L100 115 M80 150 L80 120 L90 120 M120 150 L120 120 L110 120 M100 115 C80 130 80 150 100 150 C120 150 120 130 100 115',
+  animales: 'M65 100 C60 90 50 85 50 95 C50 105 60 108 65 100 M135 100 C140 90 150 85 150 95 C150 105 140 108 135 100 M100 70 C95 55 105 55 100 70 M85 80 C80 75 78 68 80 72 M115 80 C120 75 122 68 120 72 M100 90 L100 130 M75 150 L80 130 L85 132 M125 150 L120 130 L115 132 M100 130 C85 140 85 150 100 155 C115 150 115 140 100 130',
+  corazon: 'M100 160 L30 95 C15 82 15 58 35 48 C50 40 75 50 100 75 C125 50 150 40 165 48 C185 58 185 82 170 95 Z',
+  check: 'M30 100 L75 145 L170 50',
+};
+
+const strokeWidth = size === 'sm' ? 4 : size === 'xl' ? 2.5 : 3;
+const pathData = paths[name] || paths.persona;
+---
+
+<svg
+  class={[sizeMap[size], className, 'text-primary'].join(' ')}
+  viewBox="0 0 200 200"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d={pathData} />
+</svg>

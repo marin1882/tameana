@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin
+Allow: /
+
+Sitemap: https://caminatuluz.com/sitemap-index.xml

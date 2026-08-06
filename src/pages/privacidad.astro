@@ -1,0 +1,125 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+
+export const prerender = true;
+---
+
+<PageLayout
+  title="Aviso de Privacidad"
+  description="Política de privacidad y protección de datos personales conforme al RGPD."
+>
+  <div class="max-w-2xl mx-auto space-y-8">
+    <h1 class="font-serif text-3xl md:text-4xl text-ink text-center">Aviso de Privacidad</h1>
+
+    <p class="text-ink/70 leading-relaxed">
+      En cumplimiento del Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo,
+      de 27 de abril de 2016, relativo a la protección de las personas físicas en lo que
+      respecta al tratamiento de datos personales y a la libre circulación de estos datos
+      (en adelante, RGPD), te informamos de los siguientes aspectos relativos al
+      tratamiento de tus datos personales.
+    </p>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Responsable del tratamiento</h2>
+      <ul class="text-ink/70 space-y-1 list-disc list-inside leading-relaxed">
+        <li><strong>Identidad:</strong> <!-- TODO: nombre fiscal -->[Nombre y apellidos]</li>
+        <li><strong>NIF:</strong> <!-- TODO: NIF -->[NIF]</li>
+        <li><strong>Dirección:</strong> <!-- TODO: dirección profesional -->[Dirección]</li>
+        <li><strong>Email de contacto:</strong> <!-- TODO: email de contacto -->[Email]</li>
+      </ul>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Finalidad del tratamiento</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Los datos personales que nos facilitas a través del formulario de reserva
+        (nombre, email, teléfono y, opcionalmente, un mensaje) se utilizan
+        exclusivamente para:
+      </p>
+      <ul class="text-ink/70 space-y-1 list-disc list-inside leading-relaxed">
+        <li>Gestionar tu solicitud de reserva de sesión.</li>
+        <li>Comunicarnos contigo en relación con dicha reserva (confirmación, cambios, cancelación).</li>
+        <li>Enviarte, si procede, el justificante de confirmación de tu cita.</li>
+      </ul>
+      <p class="text-ink/70 leading-relaxed">
+        No utilizamos tus datos para fines comerciales ni los cedemos a terceros,
+        salvo obligación legal.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Legitimación</h2>
+      <p class="text-ink/70 leading-relaxed">
+        La base legal para el tratamiento de tus datos es el consentimiento que nos
+        prestas al marcar la casilla de aceptación de esta política en el formulario
+        de reserva, así como la ejecución de la relación precontractual derivada de
+        tu solicitud.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Destinatarios</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Tus datos no serán comunicados a terceros, salvo a:
+      </p>
+      <ul class="text-ink/70 space-y-1 list-disc list-inside leading-relaxed">
+        <li>
+          <strong>Resend, Inc.</strong>, como proveedor de envío de correos
+          electrónicos transaccionales (confirmaciones de reserva), cuyos
+          servidores se encuentran en la Unión Europea y Estados Unidos,
+          acogidos al Data Privacy Framework.
+        </li>
+        <li>
+          <strong>Cloudflare, Inc.</strong>, como proveedor de infraestructura de
+          alojamiento web, cuyos servidores se encuentran en la Unión Europea.
+        </li>
+        <li>
+          <strong>Obligación legal:</strong> en caso de requerimiento por parte
+          de una autoridad judicial o administrativa competente.
+        </li>
+      </ul>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Derechos</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Puedes ejercer en cualquier momento tus derechos de acceso, rectificación,
+        supresión, oposición, limitación del tratamiento y portabilidad de tus
+        datos, dirigiendo una solicitud por escrito a la dirección de correo
+        electrónico indicada en el apartado del responsable.
+      </p>
+      <p class="text-ink/70 leading-relaxed">
+        También tienes derecho a presentar una reclamación ante la Agencia Española
+        de Protección de Datos (AEPD) si consideras que el tratamiento no se ajusta
+        a la normativa vigente.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Conservación de los datos</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Los datos personales se conservarán mientras dure la relación profesional
+        y, posteriormente, durante los plazos legales de prescripción de posibles
+        responsabilidades. Los datos de las reservas se conservan de forma indefinida
+        con fines de historial clínico y administrativo de la actividad profesional.
+        Puedes solicitar la supresión de tus datos en cualquier momento, salvo que
+        exista una obligación legal que obligue a conservarlos.
+      </p>
+    </section>
+
+    <section class="space-y-3">
+      <h2 class="font-serif text-xl text-ink">Medidas de seguridad</h2>
+      <p class="text-ink/70 leading-relaxed">
+        Adoptamos las medidas técnicas y organizativas necesarias para garantizar
+        la seguridad de tus datos personales y evitar su alteración, pérdida,
+        tratamiento o acceso no autorizado. La web se sirve exclusivamente a través
+        de conexión cifrada HTTPS y los datos se almacenan en servidores de
+        Cloudflare con acceso restringido.
+      </p>
+    </section>
+
+    <p class="text-ink/40 text-sm text-center pt-4">
+      Última actualización: julio de 2026
+    </p>
+  </div>
+</PageLayout>

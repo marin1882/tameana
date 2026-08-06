@@ -1,0 +1,8 @@
+name = "tameana"
+compatibility_date = "2025-07-09"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tameana-db"
+database_id = "bcd54df9-c914-49a6-865e-65d16ef0ebe9"

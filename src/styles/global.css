@@ -1,0 +1,158 @@
+/* Fontsource — tipografía autoalojada, sin Google Fonts externo */
+@import '@fontsource/fraunces/400.css';
+@import '@fontsource/fraunces/500.css';
+@import '@fontsource/fraunces/600.css';
+@import '@fontsource/nunito-sans/400.css';
+@import '@fontsource/nunito-sans/500.css';
+@import '@fontsource/nunito-sans/600.css';
+
+@import 'tailwindcss';
+
+/* ── Tokens de diseño ── */
+@theme {
+  --color-bg: #F7F6F4;
+  --color-surface: #D7E9E9;
+  --color-accent-soft: #B0F3F3;
+  --color-primary: #51B9B9;
+  --color-ink: #081A1A;
+  --color-error-bg: #FEF2F2;
+  --color-error-text: #DC2626;
+  --color-success-bg: #DCFCE7;
+  --color-success-text: #15803D;
+  --font-serif: 'Fraunces', serif;
+  --font-sans: 'Nunito Sans', sans-serif;
+}
+
+/* ── Modo oscuro: azul noche profundo ── */
+/* Prioridad: data-theme explícito > prefers-color-scheme del sistema */
+:root {
+  --color-bg: #F7F6F4;
+  --color-surface: #D7E9E9;
+  --color-accent-soft: #B0F3F3;
+  --color-primary: #51B9B9;
+  --color-ink: #081A1A;
+  --color-error-bg: #FEF2F2;
+  --color-error-text: #DC2626;
+  --color-success-bg: #DCFCE7;
+  --color-success-text: #15803D;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0A1628;
+    --color-surface: #112240;
+    --color-accent-soft: #1A4460;
+    --color-primary: #5ECFCF;
+    --color-ink: #E2E8F0;
+    --color-error-bg: #3B1111;
+    --color-error-text: #FCA5A5;
+    --color-success-bg: #0A2E1A;
+    --color-success-text: #6EE7B7;
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0A1628;
+  --color-surface: #112240;
+  --color-accent-soft: #1A4460;
+  --color-primary: #5ECFCF;
+  --color-ink: #E2E8F0;
+  --color-error-bg: #3B1111;
+  --color-error-text: #FCA5A5;
+  --color-success-bg: #0A2E1A;
+  --color-success-text: #6EE7B7;
+}
+
+/* ── Estilos base ── */
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  /* Texto de cuerpo siempre en ink sobre bg/surface */
+  p, li, span, a {
+    color: var(--color-ink);
+  }
+}
+
+/* ── Utilidades reutilizables ── */
+@utility btn-primary {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-ink);
+  font-weight: 600;
+  border-radius: 1rem;
+  transition: all 200ms;
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--color-accent-soft);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+@utility btn-ghost {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
+  border-radius: 1rem;
+  transition: all 200ms;
+  text-decoration: none;
+
+  &:hover {
+    background-color: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ── Animación respiración del logo ── */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 24px var(--color-accent-soft));
+  }
+}
+
+/* ── Animación fade-in para "entrar" ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Respetar prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .logo-breathing {
+    animation: none;
+    filter: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

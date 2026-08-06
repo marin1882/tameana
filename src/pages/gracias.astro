@@ -1,0 +1,38 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Icon from '../components/Icon.astro';
+import CTALink from '../components/CTALink.astro';
+
+export const prerender = true;
+---
+
+<PageLayout
+  title="Gracias"
+  description="Hemos recibido tu solicitud de reserva. Te contactaremos pronto para confirmar."
+>
+  <div class="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6">
+    <div class="w-20 h-20 rounded-full bg-accent-soft flex items-center justify-center">
+      <Icon name="check" size="md" class="text-primary" />
+    </div>
+
+    <h1 class="font-serif text-3xl md:text-4xl text-ink">
+      Gracias por tu solicitud
+    </h1>
+
+    <p class="text-ink/70 text-lg leading-relaxed max-w-md">
+      Hemos recibido tu solicitud de reserva. Te contactaremos pronto
+      para confirmar la fecha y la hora.
+    </p>
+
+    <p class="text-ink/50 text-sm max-w-md">
+      Si no recibes respuesta en 24 horas, revisa tu carpeta de spam
+      o contáctanos directamente.
+    </p>
+
+    <div class="pt-4">
+      <CTALink href="/inicio" variant="ghost">
+        Volver al inicio
+      </CTALink>
+    </div>
+  </div>
+</PageLayout>

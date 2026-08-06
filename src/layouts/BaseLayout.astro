@@ -1,0 +1,104 @@
+---
+import Header from '../components/Header.astro';
+import Starfield from '../components/Starfield.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  canonicalURL?: string;
+  withHeader?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogImage = '/og-default.png',
+  canonicalURL,
+  withHeader = false,
+} = Astro.props;
+
+const fullTitle = title.includes('Tameana') ? title : `${title} — Tameana`;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Anti-flash: aplica el tema antes del primer pintado -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else if (stored === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
+    <!-- View Transitions nativas del navegador -->
+    <meta name="view-transition" content="same-origin" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_ES" />
+
+    {canonicalURL && (
+      <link rel="canonical" href={new URL(canonicalURL, Astro.site).href} />
+    )}
+
+    <!-- Animaciones de transición entre páginas -->
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+
+      ::view-transition-old(root) {
+        animation: 0.3s ease-out both fade-out;
+      }
+
+      ::view-transition-new(root) {
+        animation: 0.3s ease-in both fade-in;
+      }
+
+      @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-bg text-ink font-sans antialiased flex flex-col">
+    <Starfield />
+    {withHeader && <Header />}
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="border-t border-primary/15 py-6 mt-12">
+      <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-ink/40">
+        <span>&copy; 2026 Caminatu Luz</span>
+        <nav class="flex items-center gap-4">
+          <a href="/privacidad" class="hover:text-ink/70 transition-colors">Privacidad</a>
+          <a href="/aviso-legal" class="hover:text-ink/70 transition-colors">Aviso legal</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

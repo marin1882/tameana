@@ -1,0 +1,41 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import DrawnIcon from '../components/DrawnIcon.astro';
+
+export const prerender = true;
+
+const sections = [
+  { icon: 'quien-soy' as const, label: 'Quién soy', href: '/quien-soy', desc: 'Conoce a la terapeuta' },
+  { icon: 'sesiones' as const, label: 'Sesiones', href: '/sesiones', desc: 'Acompañamiento personal' },
+  { icon: 'tameana' as const, label: 'Tameana', href: '/tameana', desc: 'Modalidades y sesiones' },
+];
+---
+
+<PageLayout
+  title="Inicio"
+  description="Tameana — Espacio de terapia y acompañamiento. Conoce a la terapeuta, descubre las sesiones y las modalidades de Tameana."
+>
+  <div class="min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center">
+    <h1 class="font-serif text-3xl md:text-4xl text-ink text-center mb-16">
+      Un espacio de calma
+    </h1>
+
+    <nav
+      aria-label="Secciones principales"
+      class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16"
+    >
+      {sections.map((section) => (
+        <a
+          href={section.href}
+          aria-label={section.label}
+          class="flex flex-col items-center gap-3 p-6 rounded-2xl transition-all duration-300
+                 hover:bg-surface hover:scale-105 group"
+        >
+          <DrawnIcon name={section.icon} size="xl" class="text-primary transition-transform duration-300 group-hover:scale-110" />
+          <span class="font-serif text-xl font-medium text-ink">{section.label}</span>
+          <span class="text-sm text-ink/50">{section.desc}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+</PageLayout>

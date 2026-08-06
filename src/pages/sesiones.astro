@@ -1,0 +1,76 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Icon from '../components/Icon.astro';
+import CTALink from '../components/CTALink.astro';
+
+export const prerender = true;
+---
+
+<PageLayout
+  title="Sesiones de acompañamiento"
+  description="Descubre cómo son las sesiones de acompañamiento. Un espacio seguro para explorar, sanar y crecer a tu ritmo."
+>
+  <div class="max-w-2xl mx-auto space-y-12">
+    <div class="space-y-4">
+      <h1 class="font-serif text-3xl md:text-4xl text-ink">Sesiones de acompañamiento</h1>
+      <!-- TODO: texto real -->
+      <p class="text-ink/70 text-lg leading-relaxed">
+        Las sesiones son un espacio de calma y escucha donde puedes explorar
+        lo que te inquieta, te duele o simplemente necesita ser mirado con
+        atención y cuidado.
+      </p>
+    </div>
+
+    <!-- Qué es -->
+    <section class="space-y-3">
+      <div class="flex items-center gap-3">
+        <Icon name="corazon" size="sm" class="text-primary" />
+        <h2 class="font-serif text-2xl text-ink">¿Qué es una sesión?</h2>
+      </div>
+      <!-- TODO: texto real -->
+      <p class="text-ink/70 leading-relaxed pl-11">
+        Una sesión de acompañamiento es un encuentro de una hora donde trabajamos
+        juntos para identificar aquello que necesita atención. Puede incluir
+        conversación, ejercicios de presencia, técnicas de relajación y,
+        si lo deseas, sesiones de Tameana.
+      </p>
+    </section>
+
+    <!-- Proceso -->
+    <section class="space-y-3">
+      <div class="flex items-center gap-3">
+        <Icon name="espiral" size="sm" class="text-primary" />
+        <h2 class="font-serif text-2xl text-ink">El proceso</h2>
+      </div>
+      <!-- TODO: texto real -->
+      <p class="text-ink/70 leading-relaxed pl-11">
+        No hay un camino único. Cada proceso es personal y se adapta a tu
+        momento, a tus necesidades y a tu ritmo. Algunas personas encuentran
+        lo que buscan en pocas sesiones; otras prefieren un acompañamiento
+        más prolongado. Lo importante es que sea tu proceso.
+      </p>
+    </section>
+
+    <!-- Duración -->
+    <section class="space-y-3">
+      <div class="flex items-center gap-3">
+        <Icon name="check" size="sm" class="text-primary" />
+        <h2 class="font-serif text-2xl text-ink">Información práctica</h2>
+      </div>
+      <!-- TODO: texto real -->
+      <ul class="text-ink/70 leading-relaxed pl-11 space-y-2">
+        <li>Duración: 60 minutos aproximadamente</li>
+        <li>Modalidad: presencial</li>
+        <li>No se requiere experiencia previa</li>
+        <li>El pago se realiza en la sesión</li>
+      </ul>
+    </section>
+
+    <!-- CTA -->
+    <div class="text-center pt-8">
+      <CTALink href="/reservar?servicio=acompanamiento" variant="primary">
+        Reservar una sesión
+      </CTALink>
+    </div>
+  </div>
+</PageLayout>

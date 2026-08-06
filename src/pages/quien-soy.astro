@@ -1,0 +1,51 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import CTALink from '../components/CTALink.astro';
+
+export const prerender = true;
+---
+
+<PageLayout
+  title="Quién soy"
+  description="Conoce a la terapeuta detrás de Tameana. Mi camino, mi enfoque y cómo puedo acompañarte."
+>
+  <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+    <!-- Foto placeholder -->
+    <div class="bg-surface rounded-2xl aspect-[3/4] flex items-center justify-center border-2 border-dashed border-primary/30 max-w-sm mx-auto w-full">
+      <!-- TODO: foto real de la terapeuta -->
+      <div class="text-center text-primary/40">
+        <svg class="w-16 h-16 mx-auto mb-2" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="100" cy="70" r="30" />
+          <path d="M50 180 C50 130 150 130 150 180" />
+        </svg>
+        <span class="text-sm font-medium">Foto</span>
+      </div>
+    </div>
+
+    <!-- Texto de presentación -->
+    <div class="space-y-6">
+      <h1 class="font-serif text-3xl md:text-4xl text-ink">Quién soy</h1>
+
+      <div class="space-y-4 text-ink/80 leading-relaxed">
+        <p>
+          Mi camino hacia el bienestar comenzó con un profundo proceso de autoconocimiento y sanación. Desde muy joven sentí la necesidad de comprender el origen de aquello que me limitaba y, a lo largo de los años, fui descubriendo herramientas que transformaron mi manera de vivir y de relacionarme conmigo misma.
+        </p>
+        <p>
+          Ese recorrido me llevó a integrar la sanación emocional, física y energética como parte de mi vida, y también a formarme para poder acompañar a otras personas desde la experiencia, la escucha y el respeto.
+        </p>
+        <p>
+          Hoy realizo sesiones de coaching y terapias Tameana, creando un espacio seguro donde cada persona pueda conectar consigo misma, tomar conciencia de aquello que necesita transformar y avanzar hacia un mayor equilibrio y bienestar.
+        </p>
+        <p>
+          Creo que cada ser humano tiene dentro de sí los recursos necesarios para sanar y crecer. Mi labor no es recorrer el camino por ti, sino acompañarte para que puedas descubrir tu propia fuerza, recuperar tu equilibrio y acercarte a la vida que deseas vivir.
+        </p>
+      </div>
+
+      <div class="pt-4">
+        <CTALink href="/sesiones" variant="ghost">
+          Conocer las sesiones &rarr;
+        </CTALink>
+      </div>
+    </div>
+  </div>
+</PageLayout>

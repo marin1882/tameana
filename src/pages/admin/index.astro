@@ -1,0 +1,357 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { env } from 'cloudflare:workers';
+import { getDb } from '../../db';
+import { bookings, services, clients } from '../../db/schema';
+import { desc, sql } from 'drizzle-orm';
+
+export const prerender = false;
+
+const db = getDb(env);
+
+// Cargar servicios para resolver nombres
+const serviciosList = await db.select().from(services).all();
+const servicioNombre: Record<number, string> = {};
+for (const s of serviciosList) {
+  servicioNombre[s.id] = s.nombre;
+}
+
+const todas = await db.query.bookings.findMany({
+  orderBy: [desc(bookings.fecha), desc(bookings.hora_inicio)],
+});
+
+// Contar reservas por email para detectar recurrentes
+const bookingCountByEmail: Record<string, number> = {};
+for (const b of todas) {
+  bookingCountByEmail[b.email] = (bookingCountByEmail[b.email] || 0) + 1;
+}
+
+// Separar: próximas (pendiente/confirmada) y pasadas/canceladas
+const hoy = new Date().toISOString().split('T')[0];
+const proximas = todas.filter(
+  (b) => b.estado !== 'cancelada' && b.fecha >= hoy
+);
+const historicas = todas.filter(
+  (b) => b.estado === 'cancelada' || b.fecha < hoy
+);
+---
+
+<BaseLayout title="Admin — Panel" description="Panel de administración de reservas">
+  <div class="max-w-6xl mx-auto space-y-8 px-4 py-8">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="font-serif text-2xl md:text-3xl text-ink">Panel de administración</h1>
+        <p class="text-ink/50 text-sm mt-1">{todas.length} reservas en total</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <input
+          type="text"
+          id="admin-search"
+          placeholder="Buscar por nombre o email..."
+          class="px-3 py-1.5 text-sm bg-bg border border-primary/20 rounded-lg text-ink placeholder:text-ink/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors w-48"
+        />
+        <a href="/admin?cleanup=true" style="color: var(--color-error-text); opacity: 0.7;" class="text-xs hover:opacity-100 transition-colors" id="cleanup-link">
+          Limpiar pruebas
+        </a>
+        <a href="/admin/logout" class="text-sm text-ink/40 hover:text-ink transition-colors">
+          Salir
+        </a>
+      </div>
+    </div>
+
+    <!-- Reservas próximas -->
+    <section>
+      <h2 class="font-serif text-xl text-ink mb-4">
+        Próximas reservas
+        <span class="text-ink/30 text-base ml-2">({proximas.length})</span>
+      </h2>
+
+      {proximas.length === 0 ? (
+        <p class="text-ink/40 bg-surface rounded-xl p-6 text-center">No hay reservas próximas.</p>
+      ) : (
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm" id="bookings-table">
+            <thead>
+              <tr class="border-b border-primary/20 text-ink/50 text-left">
+                <th class="py-2 pr-4 font-medium">Fecha</th>
+                <th class="py-2 pr-4 font-medium">Hora</th>
+                <th class="py-2 pr-4 font-medium">Servicio</th>
+                <th class="py-2 pr-4 font-medium">Cliente</th>
+                <th class="py-2 pr-4 font-medium">Contacto</th>
+                <th class="py-2 pr-4 font-medium">Nota admin</th>
+                <th class="py-2 pr-4 font-medium">Estado</th>
+                <th class="py-2 font-medium">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {proximas.map((b) => {
+                const esRecurrente = bookingCountByEmail[b.email] > 1;
+                return (
+                  <tr
+                    class="border-b border-ink/5 hover:bg-surface/50 transition-colors booking-row"
+                    data-email={b.email}
+                    data-nombre={b.nombre}
+                  >
+                    <td class="py-3 pr-4 text-ink">
+                      {new Date(b.fecha + 'T00:00:00').toLocaleDateString('es-ES', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </td>
+                    <td class="py-3 pr-4 text-ink">{b.hora_inicio}</td>
+                    <td class="py-3 pr-4 text-ink/70">{servicioNombre[b.service_id] || '—'}</td>
+                    <td class="py-3 pr-4">
+                      <div class="flex items-center gap-1.5">
+                        <a
+                          href={`/admin/cliente?email=${encodeURIComponent(b.email)}`}
+                          class="text-ink font-medium hover:text-primary transition-colors"
+                        >
+                          {b.nombre}
+                        </a>
+                        {esRecurrente && (
+                          <a
+                            href={`/admin/cliente?email=${encodeURIComponent(b.email)}`}
+                            class="text-[10px] px-1.5 py-0.5 rounded-full bg-accent-soft text-ink/60 hover:text-ink transition-colors whitespace-nowrap"
+                            title={`${bookingCountByEmail[b.email]} reservas`}
+                          >
+                            recurrente
+                          </a>
+                        )}
+                      </div>
+                    </td>
+                    <td class="py-3 pr-4 text-ink/50 text-xs">
+                      <div>{b.email}</div>
+                      <div>{b.telefono}</div>
+                    </td>
+                    <td class="py-3 pr-4">
+                      <div class="flex items-center gap-1">
+                        <input
+                          type="text"
+                          class="nota-admin-input w-28 px-2 py-1 text-xs bg-bg border border-primary/20 rounded-lg text-ink placeholder:text-ink/30 focus:outline-none focus:border-primary transition-colors"
+                          placeholder="Nota..."
+                          value={b.nota_admin || ''}
+                          data-booking-id={b.id}
+                        />
+                        <button
+                          class="save-note-btn text-[10px] px-2 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors whitespace-nowrap"
+                          data-booking-id={b.id}
+                        >
+                          Guardar
+                        </button>
+                      </div>
+                    </td>
+                    <td class="py-3 pr-4">
+                      {b.estado === 'pendiente' ? (
+                        <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-accent-soft text-ink">Pendiente</span>
+                      ) : (
+                        <span style="background: var(--color-success-bg); color: var(--color-success-text);" class="inline-block px-2 py-0.5 rounded-full text-xs font-medium">Confirmada</span>
+                      )}
+                    </td>
+                    <td class="py-3">
+                      <div class="flex gap-2">
+                        {b.estado === 'pendiente' && (
+                          <button
+                            data-confirm={b.id}
+                            style="background: var(--color-success-bg); color: var(--color-success-text);"
+                            class="px-3 py-1 text-xs font-medium rounded-lg hover:opacity-80 transition-colors"
+                          >
+                            Confirmar
+                          </button>
+                        )}
+                        <button
+                          data-cancel={b.id}
+                          style="background: var(--color-error-bg); color: var(--color-error-text);"
+                          class="px-3 py-1 text-xs font-medium rounded-lg hover:opacity-80 transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+
+    <!-- Histórico -->
+    {historicas.length > 0 && (
+      <section>
+        <details class="group">
+          <summary class="font-serif text-xl text-ink/50 cursor-pointer hover:text-ink/70 transition-colors list-none">
+            Historial <span class="text-ink/30 text-base">({historicas.length})</span>
+          </summary>
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-primary/20 text-ink/50 text-left">
+                  <th class="py-2 pr-4 font-medium">Fecha</th>
+                  <th class="py-2 pr-4 font-medium">Hora</th>
+                  <th class="py-2 pr-4 font-medium">Servicio</th>
+                  <th class="py-2 pr-4 font-medium">Cliente</th>
+                  <th class="py-2 font-medium">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {historicas.map((b) => (
+                  <tr class="border-b border-ink/5 text-ink/50">
+                    <td class="py-2 pr-4">
+                      {new Date(b.fecha + 'T00:00:00').toLocaleDateString('es-ES', {
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </td>
+                    <td class="py-2 pr-4">{b.hora_inicio}</td>
+                    <td class="py-2 pr-4">{servicioNombre[b.service_id] || '—'}</td>
+                    <td class="py-2 pr-4">{b.nombre}</td>
+                    <td class="py-2">
+                      <span style="background: var(--color-error-bg); color: var(--color-error-text);" class="inline-block px-2 py-0.5 rounded-full text-xs font-medium">
+                        Cancelada
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+    )}
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  // ── Búsqueda ──
+  var searchInput = document.getElementById('admin-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      var query = this.value.toLowerCase().trim();
+      var rows = document.querySelectorAll('.booking-row');
+      rows.forEach(function(row) {
+        var email = (row.getAttribute('data-email') || '').toLowerCase();
+        var nombre = (row.getAttribute('data-nombre') || '').toLowerCase();
+        if (!query || email.includes(query) || nombre.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  // ── Guardar nota admin ──
+  document.querySelectorAll('.save-note-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var bookingId = parseInt(this.getAttribute('data-booking-id'));
+      var input = document.querySelector('.nota-admin-input[data-booking-id="' + bookingId + '"]');
+      var nota = input ? input.value : '';
+
+      this.disabled = true;
+      this.textContent = '...';
+
+      try {
+        var res = await fetch('/_actions/updateBookingNote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: bookingId, nota_admin: nota }),
+        });
+        var data = await res.json();
+        if (!res.ok || data.error) {
+          alert('Error al guardar: ' + ((data.error && data.error.message) || 'Desconocido'));
+        } else {
+          this.textContent = '✓';
+          setTimeout(() => { this.textContent = 'Guardar'; }, 1500);
+        }
+      } catch(e) {
+        alert('Error de conexión');
+      } finally {
+        this.disabled = false;
+      }
+    });
+  });
+
+  // ── Confirmar reserva ──
+  document.querySelectorAll('[data-confirm]').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var id = parseInt(this.getAttribute('data-confirm'));
+      if (!confirm('¿Confirmar esta reserva? Se enviará un email al cliente.')) return;
+
+      this.disabled = true;
+      this.textContent = '...';
+
+      try {
+        var res = await fetch('/_actions/confirmBooking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id }),
+        });
+        var data = await res.json();
+        if (!res.ok || data.error) {
+          alert('Error: ' + ((data.error && data.error.message) || 'Desconocido'));
+          this.disabled = false;
+          this.textContent = 'Confirmar';
+        } else {
+          location.reload();
+        }
+      } catch(e) {
+        alert('Error de conexión');
+        this.disabled = false;
+        this.textContent = 'Confirmar';
+      }
+    });
+  });
+
+  // ── Cancelar reserva ──
+  document.querySelectorAll('[data-cancel]').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var id = parseInt(this.getAttribute('data-cancel'));
+      if (!confirm('¿Cancelar esta reserva? Se enviará un email al cliente.')) return;
+
+      this.disabled = true;
+      this.textContent = '...';
+
+      try {
+        var res = await fetch('/_actions/cancelBooking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id }),
+        });
+        var data = await res.json();
+        if (!res.ok || data.error) {
+          alert('Error: ' + ((data.error && data.error.message) || 'Desconocido'));
+          this.disabled = false;
+          this.textContent = 'Cancelar';
+        } else {
+          location.reload();
+        }
+      } catch(e) {
+        alert('Error de conexión');
+        this.disabled = false;
+        this.textContent = 'Cancelar';
+      }
+    });
+  });
+
+  // ── Limpiar pruebas ──
+  var cleanupLink = document.getElementById('cleanup-link');
+  if (cleanupLink) {
+    cleanupLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (!confirm('¿Borrar todas las reservas de prueba? Esta acción no se puede deshacer.')) return;
+
+      fetch('/_actions/cleanupTestBookings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) {
+            alert('Error: ' + ((data.error && data.error.message) || 'Desconocido'));
+          } else {
+            location.reload();
+          }
+        })
+        .catch(function() { alert('Error de conexión'); });
+    });
+  }
+</script>
