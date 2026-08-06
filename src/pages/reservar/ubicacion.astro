@@ -1,18 +1,23 @@
 ---
-// Paso intermedio: elegir modalidad (presencial / online) antes del calendario.
+// Paso intermedio (solo presencial): elegir ubicación — Barcelona u otras localidades.
 import PageLayout from '../../layouts/PageLayout.astro';
 import DrawnIcon from '../../components/DrawnIcon.astro';
 
 export const prerender = false;
 
 const servicio = Astro.url.searchParams.get('servicio');
+const modalidad = Astro.url.searchParams.get('modalidad');
 
 // Sin servicio, redirigir a /tameana
 if (!servicio) {
   return Astro.redirect('/tameana');
 }
 
-// Mapeo de slugs a nombres legibles
+// Si modalidad no es presencial, redirigir directo al calendario online
+if (modalidad !== 'presencial') {
+  return Astro.redirect(`/reservar?servicio=${servicio}&modalidad=online`);
+}
+
 const nombres: Record<string, string> = {
   adultos: 'Tameana para adultos',
   ninos: 'Tameana para niños',
@@ -26,44 +31,44 @@ const nombreServicio = nombres[servicio] || servicio;
 ---
 
 <PageLayout
-  title="Elige la modalidad"
-  description="Elige si prefieres una sesión presencial u online."
+  title="Elige la ubicación"
+  description="Elige si la sesión es en Barcelona o en otra localidad."
 >
   <div class="max-w-2xl mx-auto space-y-10">
     <div class="text-center space-y-3">
-      <h1 class="font-serif text-3xl md:text-4xl text-ink">¿Cómo prefieres la sesión?</h1>
+      <h1 class="font-serif text-3xl md:text-4xl text-ink">¿Dónde prefieres la sesión?</h1>
 
-      <!-- Resumen compacto del servicio ya elegido -->
-      <div id="service-summary" class="inline-flex items-center gap-2 bg-surface rounded-xl px-5 py-2.5">
+      <!-- Resumen compacto -->
+      <div class="inline-flex items-center gap-2 bg-surface rounded-xl px-5 py-2.5">
         <span class="font-serif text-ink font-medium">{nombreServicio}</span>
         <span class="text-ink/30">·</span>
-        <span class="text-ink/50 text-sm">60 min</span>
-        <a href="/tameana" class="text-xs text-primary hover:text-ink transition-colors ml-2">
+        <span class="text-ink/50 text-sm">Presencial</span>
+        <a href={`/reservar/modalidad?servicio=${servicio}`} class="text-xs text-primary hover:text-ink transition-colors ml-2">
           cambiar
         </a>
       </div>
     </div>
 
-    <!-- Tarjetas de modalidad -->
+    <!-- Tarjetas de ubicación -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-lg mx-auto">
       <a
-        href={`/reservar/ubicacion?servicio=${servicio}&modalidad=presencial`}
+        href={`/reservar?servicio=${servicio}&modalidad=presencial`}
         class="flex flex-col items-center gap-4 p-8 rounded-2xl transition-all duration-300
                bg-surface hover:bg-surface hover:scale-105 shadow-sm hover:shadow-md group"
       >
         <DrawnIcon name="presencial" size="xl" class="text-primary transition-transform duration-300 group-hover:scale-110" />
-        <span class="font-serif text-xl font-medium text-ink">Presencial</span>
-        <span class="text-sm text-ink/50 text-center">En el espacio físico de la terapeuta</span>
+        <span class="font-serif text-xl font-medium text-ink">Barcelona</span>
+        <span class="text-sm text-ink/50 text-center">En el espacio de la terapeuta</span>
       </a>
 
       <a
-        href={`/reservar?servicio=${servicio}&modalidad=online`}
+        href={`/reservar/contacto?servicio=${servicio}`}
         class="flex flex-col items-center gap-4 p-8 rounded-2xl transition-all duration-300
                bg-surface hover:bg-surface hover:scale-105 shadow-sm hover:shadow-md group"
       >
-        <DrawnIcon name="online" size="xl" class="text-primary transition-transform duration-300 group-hover:scale-110" />
-        <span class="font-serif text-xl font-medium text-ink">Online</span>
-        <span class="text-sm text-ink/50 text-center">Videollamada desde donde estés</span>
+        <DrawnIcon name="contacto" size="xl" class="text-primary transition-transform duration-300 group-hover:scale-110" />
+        <span class="font-serif text-xl font-medium text-ink">Otras localidades</span>
+        <span class="text-sm text-ink/50 text-center">Consúltanos y te informamos</span>
       </a>
     </div>
   </div>

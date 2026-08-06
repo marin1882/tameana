@@ -11,6 +11,7 @@ import {
   sendClientConfirmation,
   sendBookingConfirmed,
   sendBookingCancelled,
+  sendLocationInquiryNotification,
   sendEmailsSafe,
 } from '../lib/email';
 
@@ -184,6 +185,52 @@ export const server = {
         ]);
         if (r1.status === 'rejected') console.error('[email] Terapeuta FAIL:', r1.reason);
         if (r2.status === 'rejected') console.error('[email] Cliente FAIL:', r2.reason);
+      });
+
+      return { success: true };
+    },
+  }),
+
+  // ── Consulta desde fuera de Barcelona ──
+
+  sendLocationInquiry: defineAction({
+    input: z.object({
+      servicio: z.string(),
+      nombre: z.string().min(1, 'El nombre es obligatorio'),
+      email: z.string().email('Email inválido'),
+      telefono: z.string().min(1, 'El teléfono es obligatorio'),
+      mensaje: z.string().min(1, 'El mensaje es obligatorio'),
+      turnstileToken: z.string().min(1, 'Verificación anti-spam requerida'),
+      privacyAccepted: z.literal(true, {
+        errorMap: () => ({ message: 'Debes aceptar la política de privacidad.' }),
+      }),
+    }),
+    handler: async (input, ctx) => {
+      // Verificar Turnstile
+      const turnstileOk = await verifyTurnstile(
+        input.turnstileToken,
+        env.TURNSTILE_SECRET
+      );
+
+      if (!turnstileOk) {
+        throw new ActionError({
+          code: 'BAD_REQUEST',
+          message: 'Verificación anti-spam fallida. Inténtalo de nuevo.',
+        });
+      }
+
+      // Enviar email a la terapeuta
+      await sendEmailsSafe(ctx.locals?.cfContext, 'consulta ubicación', async () => {
+        await sendLocationInquiryNotification(
+          {
+            nombre: input.nombre.trim(),
+            email: input.email.trim().toLowerCase(),
+            telefono: input.telefono.trim(),
+            mensaje: input.mensaje.trim(),
+            servicio: input.servicio,
+          },
+          env
+        );
       });
 
       return { success: true };

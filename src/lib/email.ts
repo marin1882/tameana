@@ -185,6 +185,55 @@ Caminatu Luz`,
 }
 
 /**
+ * Envía notificación a la terapeuta cuando alguien consulta por una sesión
+ * fuera de Barcelona (formulario de /reservar/contacto). Sin email al cliente.
+ */
+export async function sendLocationInquiryNotification(
+  data: {
+    nombre: string;
+    email: string;
+    telefono: string;
+    mensaje: string;
+    servicio: string;
+  },
+  env: Env
+): Promise<void> {
+  if (!env.RESEND_API_KEY) {
+    console.warn('[email] RESEND_API_KEY no configurada');
+    return;
+  }
+
+  const resend = new Resend(env.RESEND_API_KEY);
+  const to = env.THERAPIST_EMAIL || 'marin1882@gmail.com';
+
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: [to],
+    replyTo: data.email,
+    subject: `Consulta desde fuera de Barcelona — ${data.servicio}`,
+    text: `Nueva consulta desde fuera de Barcelona:
+
+Servicio: ${data.servicio}
+
+Datos de contacto:
+Nombre: ${data.nombre}
+Email: ${data.email}
+Teléfono: ${data.telefono}
+
+Mensaje:
+${data.mensaje}
+
+Responde directamente a este correo para contactar con la persona.`,
+  });
+
+  if (error) {
+    logAndThrow('consulta ubicación', error);
+  } else {
+    console.log(`[email] Consulta ubicación enviada a ${to}`);
+  }
+}
+
+/**
  * Envía email al cliente cuando su reserva ha sido cancelada.
  */
 export async function sendBookingCancelled(

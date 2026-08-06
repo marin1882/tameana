@@ -1,0 +1,192 @@
+---
+// Formulario de contacto para sesiones fuera de Barcelona.
+// No reserva hora, solo envía un email a la terapeuta.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { env } from 'cloudflare:workers';
+
+export const prerender = false;
+
+const servicio = Astro.url.searchParams.get('servicio');
+
+if (!servicio) {
+  return Astro.redirect('/tameana');
+}
+
+const nombres: Record<string, string> = {
+  adultos: 'Tameana para adultos',
+  ninos: 'Tameana para niños',
+  espacios: 'Hama Ambientes',
+  grupal: 'Tameana grupal',
+  animales: 'Tameana para animales',
+  acompanamiento: 'Acompañamiento',
+};
+
+const nombreServicio = nombres[servicio] || servicio;
+const turnstileSiteKey = env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+---
+
+<PageLayout
+  title="Consulta desde fuera de Barcelona"
+  description="Déjanos tus datos y te informamos sobre sesiones en tu localidad."
+>
+  <div class="max-w-2xl mx-auto space-y-8">
+    <div class="text-center space-y-3">
+      <h1 class="font-serif text-3xl md:text-4xl text-ink">Cuéntanos tu situación</h1>
+
+      <!-- Resumen compacto -->
+      <div class="inline-flex items-center gap-2 bg-surface rounded-xl px-5 py-2.5">
+        <span class="font-serif text-ink font-medium">{nombreServicio}</span>
+        <span class="text-ink/30">·</span>
+        <span class="text-ink/50 text-sm">Presencial · Fuera de Barcelona</span>
+        <a href={`/reservar/ubicacion?servicio=${servicio}&modalidad=presencial`} class="text-xs text-primary hover:text-ink transition-colors ml-2">
+          cambiar
+        </a>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form id="contact-form" class="w-full max-w-md mx-auto space-y-5">
+      <input type="hidden" name="servicio" value={servicio} />
+
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-ink/70 mb-1">Nombre *</label>
+        <input
+          type="text" id="nombre" name="nombre" required autocomplete="name"
+          class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+                 transition-colors placeholder:text-ink/30"
+          placeholder="Tu nombre completo"
+        />
+      </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-ink/70 mb-1">Email *</label>
+        <input
+          type="email" id="email" name="email" required autocomplete="email"
+          class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+                 transition-colors placeholder:text-ink/30"
+          placeholder="tu@email.com"
+        />
+      </div>
+
+      <div>
+        <label for="telefono" class="block text-sm font-medium text-ink/70 mb-1">Teléfono *</label>
+        <input
+          type="tel" id="telefono" name="telefono" required autocomplete="tel"
+          class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+                 transition-colors placeholder:text-ink/30"
+          placeholder="+34 6XX XXX XXX"
+        />
+      </div>
+
+      <div>
+        <label for="mensaje" class="block text-sm font-medium text-ink/70 mb-1">
+          Mensaje *
+        </label>
+        <textarea
+          id="mensaje" name="mensaje" rows="4" required
+          class="w-full px-4 py-2.5 bg-bg border border-primary/20 rounded-xl text-ink
+                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20
+                 transition-colors placeholder:text-ink/30 resize-none"
+          placeholder="Cuéntanos tu situación, localidad y lo que necesites..."
+        ></textarea>
+      </div>
+
+      <!-- Turnstile -->
+      <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="auto"></div>
+      <input type="hidden" name="turnstileToken" id="turnstile-token" />
+
+      <!-- Privacidad -->
+      <label class="flex items-start gap-2 text-sm text-ink/70 cursor-pointer">
+        <input type="checkbox" id="privacy-accept" required
+          class="mt-0.5 w-4 h-4 rounded border-primary/30 text-primary focus:ring-primary/20 cursor-pointer" />
+        <span>He leído y acepto la <a href="/privacidad" target="_blank" class="text-primary underline">política de privacidad</a> *</span>
+      </label>
+
+      <!-- Error -->
+      <div id="form-error" class="hidden text-sm rounded-xl px-4 py-2" style="color: var(--color-error-text); background-color: var(--color-error-bg)"></div>
+
+      <!-- Submit -->
+      <button type="submit" id="form-submit"
+        class="btn-primary w-full text-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        Enviar consulta
+      </button>
+    </form>
+  </div>
+</PageLayout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('form-submit') as HTMLButtonElement;
+  const errorDiv = document.getElementById('form-error') as HTMLDivElement;
+  const turnstileTokenInput = document.getElementById('turnstile-token') as HTMLInputElement;
+  const privacyCheckbox = document.getElementById('privacy-accept') as HTMLInputElement;
+
+  let turnstileOk = false;
+
+  function updateSubmitState() {
+    submitBtn.disabled = !(turnstileOk && privacyCheckbox?.checked);
+  }
+
+  (window as any).onTurnstileCallback = function(token: string) {
+    turnstileTokenInput.value = token;
+    turnstileOk = true;
+    updateSubmitState();
+  };
+
+  (window as any).onTurnstileExpired = function() {
+    turnstileTokenInput.value = '';
+    turnstileOk = false;
+    updateSubmitState();
+  };
+
+  privacyCheckbox?.addEventListener('change', updateSubmitState);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    const formData = new FormData(form);
+    const data: Record<string, any> = {};
+    formData.forEach((v, k) => { data[k] = v; });
+    data.privacyAccepted = true;
+
+    try {
+      const res = await fetch('/_actions/sendLocationInquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || result.error) {
+        const msg = result.error?.message || 'Error al enviar la consulta. Inténtalo de nuevo.';
+        errorDiv.textContent = msg;
+        errorDiv.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar consulta';
+        if (typeof turnstile !== 'undefined') {
+          turnstile.reset();
+        }
+        turnstileTokenInput.value = '';
+        turnstileOk = false;
+        updateSubmitState();
+        return;
+      }
+
+      window.location.href = '/gracias';
+    } catch (_err) {
+      errorDiv.textContent = 'Error de conexión. Revisa tu internet e inténtalo de nuevo.';
+      errorDiv.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar consulta';
+    }
+  });
+</script>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
