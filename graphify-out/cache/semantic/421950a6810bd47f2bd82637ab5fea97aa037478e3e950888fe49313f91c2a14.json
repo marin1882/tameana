@@ -1,0 +1,1 @@
+{"nodes": [{"id": "bitacora_2026_07_10", "label": "Session Log 2026-07-10", "file_type": "document", "source_file": "bitacora/2026-07-10.md"}], "edges": [{"source": "bitacora_2026_07_10", "target": "plan_md", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "bitacora/2026-07-10.md"}], "hyperedges": []}
